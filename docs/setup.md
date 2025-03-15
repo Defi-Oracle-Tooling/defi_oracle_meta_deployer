@@ -1,47 +1,78 @@
 # Setup
-
 This section will guide you through the setup process for the DeFi Oracle Meta Deployer project.
 
 ## Prerequisites
-
 - Python 3.8 or higher
 - Azure CLI
 - Git
+- Docker (optional)
 
 ## Installation
 
+### Clone the Repository
 1. Clone the repository:
-
 ```bash
 git clone https://github.com/your-repo/defi_oracle_meta_deployer.git
 ```
-
 2. Navigate to the project directory:
-
 ```bash
 cd defi_oracle_meta_deployer
 ```
 
+### Python Setup
 3. Install the required Python packages:
-
 ```bash
 pip install -r requirements.txt
 ```
 
+### Environment Variables
 4. Set up environment variables:
 
+#### Using Export (Linux/MacOS)
 ```bash
 export AZURE_SUBSCRIPTION_ID=<your_subscription_id>
 export AZURE_ACCESS_TOKEN=<your_access_token>
 export AZURE_ADMIN_PASSWORD=<your_admin_password>
+export SECRET_KEY=<your_secret_key>
 ```
 
-5. Run the application:
+#### Using .env File
+Create a `.env` file in the project root and add the following:
+```
+AZURE_SUBSCRIPTION_ID=your_subscription_id
+AZURE_ACCESS_TOKEN=your_access_token
+AZURE_ADMIN_PASSWORD=your_admin_password
+SECRET_KEY=your_secret_key
+```
 
+### Running the Application
+5. Run the application:
 ```bash
 python app.py
 ```
-
 6. Access the web interface:
-
 Open your browser and navigate to `http://localhost:5000`.
+
+### Docker Setup (Optional)
+
+#### Build and Run with Docker
+1. Build the Docker image:
+```bash
+docker build -t defi_oracle_meta_deployer .
+```
+2. Run the Docker container:
+```bash
+docker run -d -p 5000:5000 --env-file .env defi_oracle_meta_deployer
+```
+
+### Testing
+
+#### Running Unit Tests
+1. Run the unit tests:
+```bash
+pytest tests/
+```
+2. Generate a coverage report:
+```bash
+pytest --cov=app tests/
+```

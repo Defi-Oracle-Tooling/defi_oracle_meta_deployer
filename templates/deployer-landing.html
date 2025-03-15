@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Deployer Landing Page{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Deployer Landing Page</h1>
+    <p>Welcome to the DeFi Oracle Meta Deployer. Here you can find general information about the deployer, feature screenshots, and real-time data.</p>
+    <h2>Real-Time Data</h2>
+    <ul id="realtime-data">
+        <li>Deployments: {{ realtimeData.deployments }}</li>
+        <li>Uptime: {{ realtimeData.uptime }}</li>
+    </ul>
+    <h2>Two-Factor Authentication</h2>
+    <p>To access the full deployer functionality, please complete the 2FA process below:</p>
+    <form method="POST" action="/2fa">
+        <div class="mb-3">
+            <label for="code" class="form-label">2FA Code</label>
+            <input type="text" class="form-control" id="code" name="code" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Verify</button>
+    </form>
+</div>
+<script>
+    function fetchRealtimeData() {
+        fetch('/realtime-data')
+            .then(response => response.json())
+            .then(data => {
+                const realtimeDataElement = document.getElementById('realtime-data');
+                realtimeDataElement.innerHTML = `
+                    <li>Deployments: ${data.deployments}</li>
+                    <li>Uptime: ${data.uptime}</li>
+                `;
+            })
+            .catch(error => console.error('Error fetching real-time data:', error));
+    }
+    setInterval(fetchRealtimeData, 5000); // Fetch real-time data every 5 seconds
+</script>
+{% endblock %}

@@ -4,7 +4,7 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
-from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 import subprocess
 import requests
 import json
@@ -129,6 +129,26 @@ def index():
         {"value": "southcentralus", "name": "South Central US"}
     ]
     return render_template("index.html", regions=regions)
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/docs')
+def docs():
+    return render_template('docs.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+@app.route('/deploy')
+def deploy():
+    return render_template('deploy.html')
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
 
 @app.route("/execute", methods=["POST"])
 @login_required
@@ -326,6 +346,11 @@ def emit_status(status, message):
     socketio.emit('status_update', {'status': status, 'message': message})
     app.logger.info(f'Status update: {status} - {message}')
 
+def emit_status_update(status, message):
+    """Emit status updates to connected clients"""
+    socketio.emit('status_update', {'status': status, 'message': message})
+    app.logger.info(f'Status update: {status} - {message}')
+
 @app.errorhandler(Exception)
 def handle_error(error):
     app.logger.error(f'Unhandled error: {str(error)}\n{traceback.format_exc()}')
@@ -381,6 +406,99 @@ def check_system_status():
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=check_system_status, trigger="interval", minutes=5)
 scheduler.start()
+
+# Landing page route (public view)
+@app.route('/deployer', methods=['GET'])
+def deployer_landing():
+    realtime_data = get_realtime_data()
+    return render_template('deployer-landing.html', realtimeData=realtime_data)
+
+# 2FA authentication route
+@app.route('/2fa', methods=['POST'])
+def two_factor_auth():
+    code = request.form['code']
+    if validate_2fa_code(code):
+        session['authenticated'] = True
+        return redirect(url_for('deployer_interface'))
+    else:
+        return 'Invalid 2FA code', 401
+
+# Actual deployer route (requires authentication)
+@app.route('/deploy', methods=['GET'])
+def deployer_interface():
+    if not session.get('authenticated'):
+        return redirect(url_for('deployer_landing'))
+    initialize_azure_integration()
+    return render_template('deployer-full.html')
+
+# Helper function to simulate fetching real-time data
+
+def get_realtime_data():
+    return {
+        'deployments': 5,  # Example metric
+        'uptime': '99.9%'  # Example metric
+    }
+
+# Function to initialize Azure integrations
+def initialize_azure_integration():
+    try:
+        # Example: Connect to Azure services using secure configurations
+        subscription_id = os.getenv('AZURE_SUBSCRIPTION_ID')
+        access_token = os.getenv('AZURE_ACCESS_TOKEN')
+        if not subscription_id or not access_token:
+            raise ValueError('Azure credentials are not set in environment variables')
+        # Initialize Azure SDK or CLI commands here
+        # Example: az login --service-principal -u <client_id> -p <client_secret> --tenant <tenant_id>
+        app.logger.info('Azure integration initialized successfully')
+    except Exception as e:
+        app.logger.error(f'Failed to initialize Azure integration: {str(e)}')
+        raise
+
+# Placeholder function for validating the 2FA code
+def validate_2fa_code(code):
+    return code == 'expected_code'
+
+def create_network(config):
+    config_data, error = validate_config(config)
+    if error:
+        return error
+    cmd = [
+        "az", "network", "vnet", "create",
+        "--resource-group", config_data.get("resource_group", "BesuResourceGroup"),
+        "--name", config_data.get("vnet_name", "BesuVNet"),
+        "--address-prefix", config_data.get("address_prefix", "10.0.0.0/16")
+    ]
+    return run_command(cmd)
+
+def create_storage_account(config):
+    config_data, error = validate_config(config)
+    if error:
+        return error
+    cmd = [
+        "az", "storage", "account", "create",
+        "--resource-group", config_data.get("resource_group", "BesuResourceGroup"),
+        "--name", config_data.get("storage_account_name", "besustorage"),
+        "--sku", config_data.get("sku", "Standard_LRS"),
+        "--kind", config_data.get("kind", "StorageV2"),
+        "--location", config_data.get("location", "eastus")
+    ]
+    return run_command(cmd)
+
+@app.route("/create_network", methods=["POST"])
+@login_required
+def create_network_route():
+    config = request.json
+    app.logger.info(f'Network creation requested: {config}')
+    result = create_network(config)
+    return jsonify({'result': result})
+
+@app.route("/create_storage_account", methods=["POST"])
+@login_required
+def create_storage_account_route():
+    config = request.json
+    app.logger.info(f'Storage account creation requested: {config}')
+    result = create_storage_account(config)
+    return jsonify({'result': result})
 
 if __name__ == "__main__":
     socketio.run(app, debug=os.getenv('FLASK_ENV') == 'development', host="0.0.0.0", port=5000)

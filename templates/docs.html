@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Documentation</h1>
+    <div class="row mt-4">
+        <div class="col-lg-3">
+            <div class="list-group">
+                <a href="/docs/introduction" class="list-group-item list-group-item-action">Introduction</a>
+                <a href="/docs/setup" class="list-group-item list-group-item-action">Setup Guide</a>
+                <a href="/docs/usage" class="list-group-item list-group-item-action">Usage</a>
+                <a href="/docs/api_reference" class="list-group-item list-group-item-action">API Reference</a>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Welcome to the Documentation</h5>
+                    <p class="card-text">
+                        Select a topic from the menu to get started. Our documentation covers everything
+                        from basic setup to advanced deployment configurations.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

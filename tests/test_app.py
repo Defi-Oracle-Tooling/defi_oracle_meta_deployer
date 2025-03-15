@@ -10,14 +10,14 @@ class AppTestCase(unittest.TestCase):
     def test_index(self):
         response = self.app.get('/')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Azure Automation Orchestration Tool', response.data)
+        self.assertIn(b'Welcome to DeFi Oracle Meta Deployer', response.data)
 
     def test_login(self):
         username = os.getenv('TEST_USERNAME', 'admin')
         password = os.getenv('TEST_PASSWORD', 'password')
         response = self.app.post('/login', data=dict(username=username, password=password), follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Azure Automation Orchestration Tool', response.data)
+        self.assertIn(b'Welcome to DeFi Oracle Meta Deployer', response.data)
 
     def test_protected(self):
         username = os.getenv('TEST_USERNAME', 'admin')
@@ -26,6 +26,22 @@ class AppTestCase(unittest.TestCase):
         response = self.app.get('/protected')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Logged in as:', response.data)
+
+    def test_deployer_landing(self):
+        response = self.app.get('/deployer')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Deployer Landing Page', response.data)
+
+    def test_2fa_authentication(self):
+        response = self.app.post('/2fa', data=dict(code='expected_code'), follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Deployer Interface', response.data)
+
+    def test_deployer_interface(self):
+        self.app.post('/2fa', data=dict(code='expected_code'), follow_redirects=True)
+        response = self.app.get('/deploy')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Deployer Interface', response.data)
 
 if __name__ == '__main__':
     unittest.main()

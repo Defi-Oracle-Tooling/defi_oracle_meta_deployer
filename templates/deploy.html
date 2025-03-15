@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Deployer Interface{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Deployer Interface</h1>
+    <p>Welcome to the Deployer Interface. Here you can manage your deployments and monitor their status.</p>
+    <h2>Manage Deployments</h2>
+    <form id="deployment-form">
+        <div class="mb-3">
+            <label for="action" class="form-label">Action</label>
+            <select class="form-select" id="action" name="action" required>
+                <option value="create_rg">Create Resource Group</option>
+                <option value="deploy_vm">Deploy Virtual Machine</option>
+                <option value="rest_deploy">Deploy via REST API</option>
+                <option value="create_network">Create Network</option>
+                <option value="create_storage_account">Create Storage Account</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="config" class="form-label">Configuration</label>
+            <textarea class="form-control" id="config" name="config" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Execute</button>
+    </form>
+    <h2>Deployment Status</h2>
+    <div id="status"></div>
+</div>
+<script>
+    document.getElementById('deployment-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const action = document.getElementById('action').value;
+        const config = document.getElementById('config').value;
+        fetch('/execute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ action, config })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('status').innerText = `Result: ${data.result}`;
+        })
+        .catch(error => {
+            document.getElementById('status').innerText = `Error: ${error.message}`;
+        });
+    });
+</script>
+{% endblock %}
