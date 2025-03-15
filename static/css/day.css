@@ -1,10 +1,316 @@
-/* day.css - Day theme */
-body {
-    background-color: #fff;
-    color: #000;
+/* Light Mode Theme */
+:root {
+  /* Color Palette */
+  --primary-color: #2563eb; /* Blue */
+  --primary-light: #dbeafe;
+  --primary-dark: #1d4ed8;
+  --secondary-color: #10b981; /* Green */
+  --secondary-light: #d1fae5;
+  --secondary-dark: #059669;
+  --accent-color: #f59e0b; /* Amber */
+  --accent-light: #fef3c7;
+  --accent-dark: #d97706;
+  
+  /* Neutral Colors */
+  --text-color: #1f2937;
+  --text-muted: #6b7280;
+  --background-color: #ffffff;
+  --background-alt: #f3f4f6;
+  --border-color: #e5e7eb;
+  
+  /* UI Elements */
+  --card-bg: #ffffff;
+  --header-bg: #f9fafb;
+  --footer-bg: #f3f4f6;
+  --nav-hover: #dbeafe;
+  
+  /* Shadow */
+  --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Other Variables */
+  --success-color: #059669;
+  --error-color: #dc2626;
+  --warning-color: #d97706;
+  --info-color: #2563eb;
 }
 
-header, footer {
-    background-color: #e0e0e0;
-    color: #000;
+/* Base Overrides */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* Header & Navigation */
+header {
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+header h1 {
+  color: var(--primary-dark);
+}
+
+nav a {
+  color: var(--text-color);
+}
+
+nav a:hover, nav a:focus {
+  background-color: var(--nav-hover);
+  color: var(--primary-dark);
+}
+
+/* Cards & Sections */
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--box-shadow);
+}
+
+section {
+  background-color: var(--background-alt);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Buttons */
+.btn {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn:hover {
+  background-color: var(--primary-dark);
+  box-shadow: var(--box-shadow-lg);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--secondary-dark);
+}
+
+.btn-accent {
+  background-color: var(--accent-color);
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-dark);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-outline:hover {
+  background-color: var(--primary-light);
+}
+
+/* Links */
+a {
+  color: var(--primary-color);
+}
+
+a:hover, a:focus {
+  color: var(--primary-dark);
+}
+
+/* Footer */
+footer {
+  background-color: var(--footer-bg);
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Form Elements */
+input, select, textarea {
+  border: 1px solid var(--border-color);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  outline: none;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 1.5rem;
+}
+
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background-color: var(--background-alt);
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+tr:hover {
+  background-color: var(--primary-light);
+}
+
+/* Alerts and Messages */
+.alert {
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border-left: 4px solid transparent;
+}
+
+.alert-info {
+  background-color: var(--primary-light);
+  border-left-color: var(--info-color);
+  color: var(--info-color);
+}
+
+.alert-success {
+  background-color: var(--secondary-light);
+  border-left-color: var(--success-color);
+  color: var(--success-color);
+}
+
+.alert-warning {
+  background-color: var(--accent-light);
+  border-left-color: var(--warning-color);
+  color: var(--warning-color);
+}
+
+.alert-error {
+  background-color: #fee2e2;
+  border-left-color: var(--error-color);
+  color: var(--error-color);
+}
+
+/* Code blocks */
+code {
+  font-family: 'Courier New', monospace;
+  background: var(--background-alt);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.9em;
+  color: var(--primary-dark);
+}
+
+pre {
+  background: var(--background-alt);
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  color: var(--text-color);
+}
+
+/* Additional UI Elements */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.badge-secondary {
+  background-color: var(--secondary-light);
+  color: var(--secondary-dark);
+}
+
+.badge-accent {
+  background-color: var(--accent-light);
+  color: var(--accent-dark);
+}
+
+/* Tooltips */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltip:hover::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5rem;
+  background-color: var(--text-color);
+  color: white;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  margin: 2rem 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 1rem;
+  width: 2px;
+  background-color: var(--border-color);
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.25rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  border: 2px solid var(--background-color);
+}
+
+/* Progress bar */
+.progress {
+  height: 0.5rem;
+  background-color: var(--background-alt);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--primary-color);
+  border-radius: 9999px;
 }
