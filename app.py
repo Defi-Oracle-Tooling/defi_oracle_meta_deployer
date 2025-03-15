@@ -531,40 +531,6 @@ def deploy_vm_route():
         app.logger.error(f'Error deploying VM: {str(e)}')
         return jsonify({'error': str(e)}), 500
 
-@app.route('/create_network', methods=['POST'])
-@login_required
-def create_network_route():
-    config = request.json
-    app.logger.info(f'Network creation requested: {config}')
-    try:
-        network_params = {
-            'location': config['location'],
-            'address_space': {'address_prefixes': [config['address_prefix']]}
-        }
-        network_client.virtual_networks.create_or_update(config['resource_group'], config['name'], network_params)
-        return jsonify({'result': 'Network created successfully'})
-    except Exception as e:
-        app.logger.error(f'Error creating network: {str(e)}')
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/create_storage_account', methods=['POST'])
-@login_required
-def create_storage_account_route():
-    config = request.json
-    app.logger.info(f'Storage account creation requested: {config}')
-    try:
-        storage_params = {
-            'sku': {'name': config['sku']},
-            'kind': config['kind'],
-            'location': config['location'],
-            'properties': {}
-        }
-        storage_client.storage_accounts.create(config['resource_group'], config['name'], storage_params)
-        return jsonify({'result': 'Storage account created successfully'})
-    except Exception as e:
-        app.logger.error(f'Error creating storage account: {str(e)}')
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/setup_monitoring', methods=['POST'])
 @login_required
 def setup_monitoring_route():
