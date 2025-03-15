@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
               errorDiv.className = 'alert alert-danger';
               errorDiv.textContent = error.message;
               form.insertBefore(errorDiv, form.firstChild);
-              setTimeout(() => errorDiv.remove(), 5000);
+              removeElementAfterDelay(errorDiv, 5000);
           } finally {
               submitButton.disabled = false;
               submitButton.textContent = submitButton.dataset.originalText || 'Submit';
@@ -551,7 +551,7 @@ socket.on('status_update', function(data) {
     
     // Auto-remove success/error messages after 5 seconds
     if (data.status !== 'processing') {
-        setTimeout(() => statusMessage.remove(), 5000);
+        removeElementAfterDelay(statusMessage, 5000);
     }
 });
 
@@ -680,3 +680,27 @@ if (typeof module !== 'undefined' && module.exports) {
     showNotification
   };
 }
+
+// Replace setTimeout with a function call
+function removeElementAfterDelay(element, delay) {
+  setTimeout(() => element.remove(), delay);
+}
+
+// Replace setInterval with a function call
+function fetchRealtimeDataPeriodically(interval) {
+  return setInterval(fetchRealtimeData, interval);
+}
+
+// Update the existing code to use the new functions
+removeElementAfterDelay(errorDiv, 5000);
+removeElementAfterDelay(statusMessage, 5000);
+fetchRealtimeDataPeriodically(5000);
+
+// Update other setTimeout usages
+setTimeout(() => notification.classList.add('show'), 10);
+setTimeout(() => {
+  notification.classList.remove('show');
+  notification.addEventListener('transitionend', function() {
+    notification.remove();
+  });
+}, duration);

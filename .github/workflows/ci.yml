@@ -1,10 +1,7 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -16,30 +13,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
-    - name: Install dependencies
+    - name: Log in to Azure
+      run: az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+
+    - name: Create Azure Container Registry if it doesn't exist
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        az acr show --name ${{ secrets.ACR_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} &>/dev/null || \
+        az acr create --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.ACR_NAME }} --sku Basic
 
-    - name: Run tests
+    - name: Log in to Azure Container Registry
+      run: az acr login --name ${{ secrets.ACR_NAME }}
+
+    - name: Build and push Docker image
       run: |
-        python -m unittest discover -s tests
-
-    - name: Build Docker image
-      run: |
-        docker build -t defi_oracle_meta_deployer .
-
-    - name: Push Docker image
-      if: github.event_name != 'pull_request'
+        docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/defi_oracle_meta_deployer:latest .
+        docker push ${{ secrets.ACR_NAME }}.azurecr.io/defi_oracle_meta_deployer:latest
       env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      run: |
-        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        docker tag defi_oracle_meta_deployer "$DOCKER_USERNAME"/defi_oracle_meta_deployer:latest
-        docker push "$DOCKER_USERNAME"/defi_oracle_meta_deployer:latest
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        AZURE_ACCESS_TOKEN: ${{ secrets.AZURE_ACCESS_TOKEN }}
+        RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+        ACR_NAME: ${{ secrets.ACR_NAME }}

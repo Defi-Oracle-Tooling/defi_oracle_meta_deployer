@@ -391,6 +391,11 @@ def after_request(response):
         LATENCY.labels(endpoint=request.path).observe(latency)
     return response
 
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
+
 def check_system_status():
     """Periodic system status check"""
     try:
