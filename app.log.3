@@ -1,0 +1,115 @@
+2025-03-15 16:01:01,283 - app - ERROR - Unhandled error: deploy.html
+Traceback (most recent call last):
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/home/azureuser/defi_oracle_meta_deployer/app.py", line 147, in deploy
+    return render_template('deploy.html')
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 65, in get_source
+    return self._get_source_fast(environment, template)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 99, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: deploy.html
+
+2025-03-15 16:01:01,284 - app - ERROR - Unhandled error: deploy.html
+Traceback (most recent call last):
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/home/azureuser/defi_oracle_meta_deployer/app.py", line 147, in deploy
+    return render_template('deploy.html')
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 65, in get_source
+    return self._get_source_fast(environment, template)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 99, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: deploy.html
+
+2025-03-15 16:01:01,290 - app - ERROR - Unhandled error: base.html
+Traceback (most recent call last):
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/home/azureuser/defi_oracle_meta_deployer/app.py", line 414, in deployer_landing
+    return render_template('deployer-landing.html', realtimeData=realtime_data)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/azureuser/defi_oracle_meta_deployer/templates/deployer-landing.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 65, in get_source
+    return self._get_source_fast(environment, template)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 99, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: base.html
+
+2025-03-15 16:14:23,506 - app - INFO - Index page accessed
+2025-03-15 16:14:25,306 - app - ERROR - Page not found: http://127.0.0.1:5000/favicon.ico
+2025-03-15 16:16:41,568 - app - INFO - System status check completed
+2025-03-15 16:16:41,569 - app - INFO - Status update: ok - System running normally
+2025-03-15 16:21:25,665 - app - ERROR - Page not found: http://127.0.0.1:5000/docs/introduction
+2025-03-15 16:21:30,099 - app - ERROR - Page not found: http://127.0.0.1:5000/docs/setup
+2025-03-15 16:21:34,724 - app - ERROR - Page not found: http://127.0.0.1:5000/docs/usage
+2025-03-15 16:21:39,199 - app - ERROR - Page not found: http://127.0.0.1:5000/docs/api_reference
+2025-03-15 16:21:41,568 - app - INFO - System status check completed
+2025-03-15 16:21:41,569 - app - INFO - Status update: ok - System running normally
+2025-03-15 16:21:44,325 - app - INFO - Index page accessed
+2025-03-15 16:22:09,219 - app - INFO - Index page accessed
+2025-03-15 16:26:41,568 - app - INFO - System status check completed
+2025-03-15 16:26:41,569 - app - INFO - Status update: ok - System running normally
+2025-03-15 16:31:41,568 - app - INFO - System status check completed
+2025-03-15 16:31:41,569 - app - INFO - Status update: ok - System running normally
+2025-03-15 16:36:41,568 - app - INFO - System status check completed
+2025-03-15 16:36:41,569 - app - INFO - Status update: ok - System running normally
+2025-03-15 16:41:41,568 - app - INFO - System status check completed
+2025-03-15 16:41:41,569 - app - INFO - Status update: ok - System running normally
+2025-03-15 16:46:41,568 - app - INFO - System status check completed
+2025-03-15 16:46:41,569 - app - INFO - Status update: ok - System running normally
+2025-03-15 17:18:26,941 - app - INFO - Index page accessed
+2025-03-15 17:22:43,180 - app - INFO - System status check completed
+2025-03-15 17:22:43,180 - app - INFO - Status update: ok - System running normally
+2025-03-15 21:52:45,718 - app - ERROR - Unhandled error: Could not build url for endpoint 'deployer_interface'. Did you mean 'routes.deployer_interface' instead?
+Traceback (most recent call last):
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/home/azureuser/defi_oracle_meta_deployer/routes.py", line 194, in two_factor_auth
+    return redirect(url_for('deployer_interface'))
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/helpers.py", line 232, in url_for
+    return current_app.url_for(
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/home/azureuser/.local/lib/python3.10/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'deployer_interface'. Did you mean 'routes.deployer_interface' instead?
+

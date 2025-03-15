@@ -1,106 +1,136 @@
-2025-03-15 09:35:00,424 - app - INFO - Index page accessed
-2025-03-15 09:39:49,574 - app - INFO - Index page accessed
-2025-03-15 09:44:56,864 - app - INFO - Index page accessed
-2025-03-15 09:51:52,809 - app - INFO - Index page accessed
-2025-03-15 09:51:57,213 - app - INFO - Index page accessed
-2025-03-15 09:52:22,427 - app - INFO - Index page accessed
-2025-03-15 09:52:41,694 - app - INFO - Index page accessed
-2025-03-15 09:53:24,394 - app - INFO - Index page accessed
-2025-03-15 09:53:27,194 - app - INFO - Index page accessed
-2025-03-15 13:13:52,244 - app - INFO - Index page accessed
-2025-03-15 13:13:52,249 - app - ERROR - Exception on /login [POST]
-Traceback (most recent call last):
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/home/azureuser/defi_oracle_meta_deployer/app.py", line 39, in login
-    login_user(user)
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask_login/utils.py", line 184, in login_user
-    session["_user_id"] = user_id
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/sessions.py", line 104, in _fail
-    raise RuntimeError(
-RuntimeError: The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
-2025-03-15 13:13:52,250 - app - ERROR - Server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application., URL: http://localhost/login
-2025-03-15 13:13:52,251 - app - ERROR - Exception on /login [POST]
-Traceback (most recent call last):
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/home/azureuser/defi_oracle_meta_deployer/app.py", line 39, in login
-    login_user(user)
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask_login/utils.py", line 184, in login_user
-    session["_user_id"] = user_id
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/sessions.py", line 104, in _fail
-    raise RuntimeError(
-RuntimeError: The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
-2025-03-15 13:13:52,251 - app - ERROR - Server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application., URL: http://localhost/login
-2025-03-15 13:13:52,252 - app - ERROR - Exception on /protected [GET]
-Traceback (most recent call last):
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask_login/utils.py", line 285, in decorated_view
-    return current_app.login_manager.unauthorized()
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask_login/login_manager.py", line 187, in unauthorized
-    flash(self.login_message, category=self.login_message_category)
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/helpers.py", line 335, in flash
-    session["_flashes"] = flashes
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/sessions.py", line 104, in _fail
-    raise RuntimeError(
-RuntimeError: The session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
-2025-03-15 13:13:52,253 - app - ERROR - Server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application., URL: http://localhost/protected
-2025-03-15 13:14:28,304 - app - INFO - Index page accessed
-2025-03-15 13:14:28,310 - app - INFO - Index page accessed
-2025-03-15 13:14:28,311 - app - INFO - Index page accessed
-2025-03-15 13:26:26,665 - app - INFO - Index page accessed
-2025-03-15 13:26:27,108 - app - ERROR - Page not found: http://52.157.148.126:5000/static/images/logo.png
-2025-03-15 13:26:27,521 - app - ERROR - Page not found: http://52.157.148.126:5000/static/images/gear.svg
-2025-03-15 13:26:29,591 - app - INFO - Index page accessed
-2025-03-15 13:26:30,033 - app - ERROR - Page not found: http://52.157.148.126:5000/static/images/logo.png
-2025-03-15 13:26:30,365 - app - ERROR - Page not found: http://52.157.148.126:5000/static/images/gear.svg
-2025-03-15 13:44:04,660 - app - INFO - Index page accessed
-2025-03-15 13:44:22,124 - app - INFO - Index page accessed
-2025-03-15 13:44:23,761 - app - ERROR - Page not found: http://52.157.148.126:5000/about
-2025-03-15 13:44:28,639 - app - ERROR - Page not found: http://52.157.148.126:5000/contact
-2025-03-15 13:54:53,647 - app - INFO - Index page accessed
-2025-03-15 14:17:11,815 - app - INFO - Index page accessed
-2025-03-15 14:20:42,119 - app - INFO - Index page accessed
-2025-03-15 16:01:01,212 - app - ERROR - Unhandled error: deploy.html
+2025-03-15 21:52:45,824 - app - ERROR - Exception on /deploy [GET]
 Traceback (most recent call last):
   File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
     rv = self.dispatch_request()
   File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/home/azureuser/defi_oracle_meta_deployer/app.py", line 147, in deploy
+  File "/home/azureuser/defi_oracle_meta_deployer/routes.py", line 36, in deploy
     return render_template('deploy.html')
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 149, in render_template
-    template = app.jinja_env.get_or_select_template(template_name_or_list)
-  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
-    return self.get_template(template_name_or_list, parent, globals)
-  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1016, in get_template
-    return self._load_template(name, globals)
-  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 975, in _load_template
-    template = self.loader.load(self, name, self.make_globals(globals))
-  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/loaders.py", line 126, in load
-    source, filename, uptodate = self.get_source(environment, name)
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 65, in get_source
-    return self._get_source_fast(environment, template)
-  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 99, in _get_source_fast
-    raise TemplateNotFound(template)
-jinja2.exceptions.TemplateNotFound: deploy.html
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/azureuser/defi_oracle_meta_deployer/templates/deploy.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/azureuser/defi_oracle_meta_deployer/templates/base.html", line 9, in template
+    <link rel="stylesheet" href="{% static 'css/system.css' %}">
+jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'static'.
 
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 809, in handle_user_exception
+    return self.ensure_sync(handler)(e)  # type: ignore[no-any-return]
+  File "/home/azureuser/defi_oracle_meta_deployer/app.py", line 91, in handle_error
+    emit_status('error', str(error))
+NameError: name 'emit_status' is not defined
+2025-03-15 21:52:45,831 - app - ERROR - Server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application., URL: http://localhost/deploy
+2025-03-15 21:52:45,836 - app - ERROR - Unhandled error: Encountered unknown tag 'static'.
+Traceback (most recent call last):
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/home/azureuser/defi_oracle_meta_deployer/routes.py", line 187, in deployer_landing
+    return render_template('deployer-landing.html', realtimeData=realtime_data)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/azureuser/defi_oracle_meta_deployer/templates/deployer-landing.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/azureuser/defi_oracle_meta_deployer/templates/base.html", line 9, in template
+    <link rel="stylesheet" href="{% static 'css/system.css' %}">
+jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'static'.
+
+2025-03-15 21:52:45,836 - app - ERROR - Exception on /deployer [GET]
+Traceback (most recent call last):
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/home/azureuser/defi_oracle_meta_deployer/routes.py", line 187, in deployer_landing
+    return render_template('deployer-landing.html', realtimeData=realtime_data)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/azureuser/defi_oracle_meta_deployer/templates/deployer-landing.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/azureuser/.local/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/azureuser/defi_oracle_meta_deployer/templates/base.html", line 9, in template
+    <link rel="stylesheet" href="{% static 'css/system.css' %}">
+jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'static'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 809, in handle_user_exception
+    return self.ensure_sync(handler)(e)  # type: ignore[no-any-return]
+  File "/home/azureuser/defi_oracle_meta_deployer/app.py", line 91, in handle_error
+    emit_status('error', str(error))
+NameError: name 'emit_status' is not defined
+2025-03-15 21:52:45,842 - app - ERROR - Server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application., URL: http://localhost/deployer
+2025-03-15 21:52:45,846 - app - ERROR - Unhandled error: name 'app' is not defined
+Traceback (most recent call last):
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/home/azureuser/defi_oracle_meta_deployer/routes.py", line 12, in index
+    app.logger.info('Index page accessed')
+NameError: name 'app' is not defined
+
+2025-03-15 21:52:45,846 - app - ERROR - Exception on / [GET]
+Traceback (most recent call last):
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/home/azureuser/defi_oracle_meta_deployer/routes.py", line 12, in index
+    app.logger.info('Index page accessed')
+NameError: name 'app' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/azureuser/.local/lib/python3.10/site-packages/flask/app.py", line 809, in handle_user_exception
+    return self.ensure_sync(handler)(e)  # type: ignore[no-any-return]
+  File "/home/azureuser/defi_oracle_meta_deployer/app.py", line 91, in handle_error
+    emit_status('error', str(error))
+NameError: name 'emit_status' is not defined
