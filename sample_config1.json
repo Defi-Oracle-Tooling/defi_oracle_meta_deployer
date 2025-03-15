@@ -1,0 +1,8 @@
+{
+  "name": "ResourceGroup1",
+  "location": "eastus",
+  "resource_group": "ResourceGroup1",
+  "vm_name": "VM1",
+  "image": "UbuntuLTS",
+  "admin_username": "user1"
+}

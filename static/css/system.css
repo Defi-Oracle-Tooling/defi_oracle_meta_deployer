@@ -1,0 +1,347 @@
+/* system.css - Updated for Azure Automation Orchestration Tool */
+
+/* Reset default margins and paddings */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  line-height: 1.6;
+}
+
+/* Header styling */
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.logo img {
+  height: 40px;
+}
+
+/* Navigation */
+.main-nav ul {
+  list-style: none;
+  display: flex;
+}
+
+.main-nav li {
+  margin-right: 20px;
+}
+
+.main-nav a {
+  color: #fff;
+  text-decoration: none;
+  padding: 5px 10px;
+  transition: background-color 0.3s;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+/* Search bar */
+.search-bar {
+  display: flex;
+  align-items: center;
+}
+
+.search-bar input[type="text"] {
+  padding: 5px;
+  border: none;
+  border-radius: 3px;
+}
+
+.search-bar button {
+  padding: 5px 10px;
+  margin-left: 5px;
+  border: none;
+  border-radius: 3px;
+  background-color: #0078d4;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-bar button:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+/* Collapse buttons in header */
+.collapse-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.collapse-buttons button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  transition: transform 0.2s;
+}
+
+.collapse-buttons button:hover {
+  transform: scale(1.1);
+}
+
+/* Common UI Patterns */
+.button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button-primary {
+  background-color: #0078d4;
+  color: #fff;
+}
+
+.button-primary:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+.button-secondary {
+  background-color: #555;
+  color: #fff;
+}
+
+.button-secondary:hover {
+  background-color: #333;
+}
+
+/* Left Sidebar */
+.sidebar {
+  background-color: #ddd;
+  padding: 10px;
+  width: 220px;
+  position: fixed;
+  top: 70px; /* space for header */
+  bottom: 60px; /* space for footer */
+  overflow-y: auto;
+}
+
+#left-sidebar {
+  left: 0;
+}
+
+#right-sidebar {
+  right: 0;
+  top: 70px;
+}
+
+/* Bottom Panel */
+.collapse-panel {
+  background-color: #eee;
+  padding: 10px;
+  width: 100%;
+  position: fixed;
+  bottom: 60px; /* above footer */
+  left: 0;
+  border-top: 1px solid #ccc;
+  text-align: center;
+}
+
+/* Main content area */
+.container {
+  margin: 80px 240px 80px 240px; /* adjust margins for fixed sidebars and bottom panel */
+  padding: 20px;
+  background-color: #fff;
+  min-height: calc(100vh - 140px);
+}
+
+/* Decision tree styling */
+.decision-tree {
+  margin-top: 20px;
+}
+
+.decision-tree h2 {
+  margin-bottom: 10px;
+}
+
+.decision-tree ul {
+  list-style: none;
+  padding-left: 20px;
+}
+
+.decision-tree li {
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+.decision-tree li span {
+  display: inline-block;
+  padding: 3px 6px;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+}
+
+.decision-tree li span:hover {
+  background-color: #f0f0f0;
+}
+
+/* Steps Container and Card Styling */
+.steps-container {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.step-card {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fafafa;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+
+.step-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.step-header {
+  background-color: #0078d4;
+  color: #fff;
+  padding: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.step-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.step-content {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Chat Interface Styles */
+.chat-interface {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #fff;
+}
+
+.chat-window {
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
+
+.user-message {
+    text-align: right;
+    color: #0078d4;
+    margin-bottom: 10px;
+}
+
+.llm-response {
+    text-align: left;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.suggestion-item {
+    padding: 5px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+}
+
+.suggestion-item:hover {
+    background-color: #e0e0e0;
+}
+
+/* Footer */
+footer {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.footer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+  display: flex;
+  gap: 15px;
+}
+
+.footer-links li {
+  display: inline;
+}
+
+.footer-links a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover {
+  color: #aaa;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 150px;
+  }
+  .container {
+    margin: 80px 160px 80px 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  header, footer {
+    padding: 5px 10px;
+  }
+  .main-nav ul {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .container {
+    margin: 80px 10px 80px 10px;
+  }
+}

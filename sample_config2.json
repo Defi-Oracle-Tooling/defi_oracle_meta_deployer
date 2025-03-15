@@ -1,0 +1,8 @@
+{
+  "name": "ResourceGroup2",
+  "location": "westus",
+  "resource_group": "ResourceGroup2",
+  "vm_name": "VM2",
+  "image": "WindowsServer",
+  "admin_username": "user2"
+}

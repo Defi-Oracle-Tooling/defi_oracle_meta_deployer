@@ -1,0 +1,8 @@
+{
+  "name": "ResourceGroup3",
+  "location": "centralus",
+  "resource_group": "ResourceGroup3",
+  "vm_name": "VM3",
+  "image": "Debian",
+  "admin_username": "user3"
+}

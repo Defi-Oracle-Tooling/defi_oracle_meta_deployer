@@ -1,0 +1,201 @@
+How to Use This Decision Tree
+	•	Top-Level Mode Selection:
+Users begin by choosing either the Simple Mode (a guided, minimal-input workflow) or Expert Mode (offering full customization).
+	•	Phase-by-Phase Expansion:
+Each major phase (I through V) is fully expanded with sub-tasks and decision points.
+	•	In Simple Mode, choices are limited to default settings and one-click commands.
+	•	In Expert Mode, every decision is accompanied by customizable options, detailed configuration files, advanced security, and monitoring setups.
+	•	Action Points:
+Every branch represents a task (e.g., “Deploy via Azure CLI”) with further details that show what commands to run, what configuration files to modify, and which monitoring or testing steps to perform.
+	•	Customization vs. Default Flow:
+This tree serves as a blueprint to build interactive orchestration tools where users can dynamically choose the level of complexity based on their expertise, ensuring that both novice and expert users have a clearly defined path.
+
+This fully expanded decision tree provides an end-to-end map of the process—from initial configuration to complete operational verification—tailored to both simple and expert workflows.
+
+Start
+│
+├── Mode Selection
+│   ├── Simple Mode (Guided, Default Settings)
+│   │   ├── I. Understand Besu Configuration (Simple)
+│   │   │   ├── A. Review Documentation & Requirements
+│   │   │   │   ├── Use the official Hyperledger Besu documentation
+│   │   │   │   ├── Load pre-selected default configuration files:
+│   │   │   │   │     ├── Genesis file (predefined parameters)
+│   │   │   │   │     ├── TOML/YAML configuration (recommended settings)
+│   │   │   │   │     └── Environment variables (minimal overrides)
+│   │   │   │   └── Choose standard node types:
+│   │   │   │         ├── Bootnodes (for discovery)
+│   │   │   │         ├── Validators (for consensus)
+│   │   │   │         └── Observers (for queries)
+│   │   │   └── B. Define Network & Security Settings
+│   │   │         ├── Select a pre-defined network type (e.g., permissioned with basic security)
+│   │   │         ├── Use a simple network topology (single VNet with one subnet)
+│   │   │         └── Apply basic firewall rules (open only essential ports)
+│   │   │
+│   │   ├── II. Create the Azure Environment (Simple)
+│   │   │   ├── A. Set Up a Resource Group
+│   │   │   │   ├── Execute one-click command:
+│   │   │   │   │     az group create --name BesuResourceGroup --location eastus
+│   │   │   │   └── Use a pre-configured REST API payload with default tags
+│   │   │   ├── B. Provision Networking Components
+│   │   │   │   ├── Create a Virtual Network with default address space
+│   │   │   │   └── Create a Subnet using standard IP ranges
+│   │   │   ├── C. Deploy Compute Resources
+│   │   │   │   ├── Choose a single Azure Virtual Machine
+│   │   │   │   ├── Use UbuntuLTS image and auto-generate SSH keys
+│   │   │   │   └── Rely on default VM size settings
+│   │   │   └── D. Establish Additional Services
+│   │   │         ├── Create a default Storage Account
+│   │   │         ├── Attach preconfigured Network Security Groups (NSGs)
+│   │   │         └── Use minimal extra services (no custom Key Vault, etc.)
+│   │   │
+│   │   ├── III. Test Configurations (Simple)
+│   │   │   ├── A. Validate Azure Deployment Templates
+│   │   │   │   └── Run a one-click validation using:
+│   │   │   │         az deployment group validate --resource-group BesuResourceGroup --template-file template.json --parameters @parameters.json
+│   │   │   ├── B. Test Besu Configuration Locally
+│   │   │   │   └── Execute: besu --config-file=besu.conf (with default settings)
+│   │   │   └── C. Perform Integration Testing on Minimal Azure Setup
+│   │   │         ├── Deploy a minimal setup to Azure
+│   │   │         ├── Verify connectivity (e.g., ping tests, simple SSH connection)
+│   │   │         └── Check basic logging outputs (tail default Besu logs)
+│   │   │
+│   │   ├── IV. Deploy the Besu Configuration (Simple)
+│   │   │   ├── A. Prepare Deployment Artifacts
+│   │   │   │   └── Use pre-built ARM templates with default parameters
+│   │   │   ├── B. Deploy via Azure CLI
+│   │   │   │   └── Execute: az deployment group create --resource-group BesuResourceGroup --template-file template.json --parameters @parameters.json
+│   │   │   ├── C. Alternatively, Deploy via REST API
+│   │   │   │   └── Use a guided REST API PUT request with default JSON payload
+│   │   │   └── D. Monitor the Deployment
+│   │   │         └── Check status using:
+│   │   │               az deployment group show --resource-group BesuResourceGroup --name BesuDeployment
+│   │   │
+│   │   └── V. Ensure Operational Status (Simple)
+│   │       ├── A. Verify Azure Resource Status
+│   │       │   └── List resources via:
+│   │       │         az vm list -d -o table
+│   │       ├── B. Check Besu Node Health
+│   │       │   ├── SSH into the node (using default credentials)
+│   │       │   └── Tail the Besu logs (e.g., sudo journalctl -u besu -f)
+│   │       ├── C. Test Blockchain Network Functionality
+│   │       │   └── Query JSON-RPC endpoint using a simple curl command
+│   │       ├── D. Implement Basic Monitoring & Alerts
+│   │       │   └── Use a pre-built Azure Monitor dashboard with basic alerts
+│   │       └── E. Conduct End-to-End Testing & Prepare Rollbacks
+│   │             ├── Run a basic transaction simulation
+│   │             └── Execute a pre-defined rollback script if necessary
+│   │
+│   └── Expert Mode (Full Customization and Granularity)
+│       ├── I. Understand Besu Configuration (Expert)
+│       │   ├── A. Review Documentation & Requirements (Expert)
+│       │   │   ├── Deep dive into the full Besu documentation and whitepapers
+│       │   │   ├── Allow selection and customization of configuration files:
+│       │   │   │     ├── Custom Genesis file parameters
+│       │   │   │     ├── Advanced TOML/YAML configuration options
+│       │   │   │     └── Detailed environment variable overrides
+│       │   │   └── B. Choose Node Types and Roles
+│       │   │         ├── Configure multiple bootnodes with redundancy
+│       │   │         ├── Define multiple validators with consensus options
+│       │   │         └── Set up specialized observer nodes with query optimizations
+│       │   └── C. Define Network & Security Settings (Expert)
+│       │         ├── Select from multiple network types:
+│       │         │     ├── Permissioned network (with granular controls)
+│       │         │     ├── Consortium network (advanced multi-party settings)
+│       │         │     └── Public chain connectivity (custom security layers)
+│       │         ├── Design a complex network topology:
+│       │         │     ├── Multiple Virtual Networks (VNets)
+│       │         │     ├── Several subnets per VNet
+│       │         │     └── Custom routing and peering configurations
+│       │         └── Configure detailed security settings:
+│       │               ├── Custom firewall rules and port configurations
+│       │               ├── Granular NSG rules (inbound/outbound filtering)
+│       │               └── Advanced encryption and authentication (TLS, OAuth2)
+│       │
+│       ├── II. Create the Azure Environment (Expert)
+│       │   ├── A. Set Up a Resource Group (Expert)
+│       │   │   ├── Provide editable ARM templates with detailed metadata
+│       │   │   └── Allow selection between CLI and REST API with full parameter control
+│       │   ├── B. Provision Networking Components (Expert)
+│       │   │   ├── Create Virtual Networks with custom IP ranges and multiple subnets
+│       │   │   └── Configure advanced NSG rules and routing tables
+│       │   ├── C. Deploy Compute Resources (Expert)
+│       │   │   ├── Select deployment type:
+│       │   │   │     ├── Azure Virtual Machines (custom sizes, images, storage options)
+│       │   │   │     ├── Azure Kubernetes Service (custom node pools, auto-scaling)
+│       │   │   │     └── Azure Container Instances (custom resource limits)
+│       │   │   └── Configure detailed VM settings (availability sets, load balancers)
+│       │   └── D. Establish Additional Services (Expert)
+│       │         ├── Create storage accounts with advanced replication and access policies
+│       │         ├── Configure NSGs with full audit logging and custom rules
+│       │         └── Integrate additional Azure services:
+│       │               ├── Azure Key Vault for secrets management
+│       │               ├── Log Analytics for comprehensive monitoring
+│       │               └── Custom monitoring agents and backup solutions
+│       │
+│       ├── III. Test Configurations (Expert)
+│       │   ├── A. Validate Azure Deployment Templates (Expert)
+│       │   │   ├── Run multiple validation passes (syntax, semantic, simulation)
+│       │   │   └── Integrate with CI/CD pipelines for continuous testing
+│       │   ├── B. Test Besu Configuration Locally (Expert)
+│       │   │   ├── Execute Besu with verbose logging and custom flags
+│       │   │   └── Run performance benchmarks and resource utilization tests
+│       │   └── C. Perform Integration Testing (Expert)
+│       │         ├── Deploy a comprehensive minimal Azure setup to mimic production
+│       │         ├── Simulate complex node interactions and network failures
+│       │         └── Use custom diagnostics and logging scripts for deep analysis
+│       │
+│       ├── IV. Deploy the Besu Configuration (Expert)
+│       │   ├── A. Prepare Deployment Artifacts (Expert)
+│       │   │   ├── Edit ARM templates to include advanced Besu settings
+│       │   │   └── Integrate version control (Git) for artifact management
+│       │   ├── B. Deploy via Azure CLI (Expert)
+│       │   │   ├── Choose between incremental, blue-green, or canary deployments
+│       │   │   └── Implement detailed logging and error reporting during deployment
+│       │   ├── C. Deploy via REST API (Expert)
+│       │   │   ├── Construct a fully customizable JSON payload
+│       │   │   └── Use custom authentication methods (e.g., OAuth2 tokens)
+│       │   └── D. Monitor the Deployment (Expert)
+│       │         ├── Use advanced CLI queries and REST API checks
+│       │         └── Integrate with third-party monitoring tools (Grafana, Kibana)
+│       │
+│       └── V. Ensure Operational Status (Expert)
+│           ├── A. Verify Azure Resource Status (Expert)
+│           │   ├── Execute detailed CLI queries with custom filters
+│           │   └── Integrate resource status with external monitoring systems
+│           ├── B. Check Besu Node Health (Expert)
+│           │   ├── Use custom SSH scripts for multi-node log aggregation
+│           │   └── Employ remote logging services (e.g., ELK stack) for in-depth analysis
+│           ├── C. Test Blockchain Network Functionality (Expert)
+│           │   ├── Develop custom scripts (Python/curl) for extensive JSON-RPC tests
+│           │   └── Simulate high transaction loads and monitor performance metrics
+│           ├── D. Implement Advanced Monitoring & Alerts (Expert)
+│           │   ├── Build custom dashboards with Azure Monitor, Grafana, or Kibana
+│           │   └── Configure granular alerting rules based on detailed performance indicators
+│           └── E. Conduct End-to-End Testing & Rollback (Expert)
+│               ├── Run comprehensive transaction simulations covering edge cases
+│               ├── Utilize automated rollback procedures triggered by custom thresholds
+│               └── Maintain detailed version histories and audit logs for troubleshooting
+
+# Custom Decision Points and Actions
+
+## Adding Custom Decision Points
+1. Identify the new decision point and its purpose.
+2. Define the conditions and actions for the decision point.
+3. Update the decision tree structure to include the new decision point.
+4. Implement the logic for the new decision point in the codebase.
+
+## Example: Custom Decision Point for Network Configuration
+
+### Decision Point: Network Configuration
+- **Condition**: User selects custom network configuration.
+- **Actions**:
+  - Prompt user for network configuration details (e.g., VNet name, address space).
+  - Validate the provided network configuration.
+  - Apply the network configuration during the deployment process.
+
+### Implementation Steps
+1. Update the decision tree structure to include the network configuration decision point.
+2. Implement the logic to prompt the user for network configuration details.
+3. Validate the provided network configuration.
+4. Apply the network configuration during the deployment process.

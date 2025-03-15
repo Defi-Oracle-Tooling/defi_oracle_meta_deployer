@@ -1,0 +1,50 @@
+{
+  "name": "CustomResourceGroup",
+  "location": "westus",
+  "resource_group": "CustomResourceGroup",
+  "vm_name": "CustomVM",
+  "image": "UbuntuLTS",
+  "admin_username": "customuser",
+  "vm_size": "Standard_DS1_v2",
+  "network": {
+    "vnet": "CustomVNet",
+    "subnet": "CustomSubnet",
+    "address_prefix": "10.1.0.0/16",
+    "subnet_prefix": "10.1.0.0/24"
+  },
+  "security": {
+    "nsg": "CustomNSG",
+    "firewall_rules": [
+      {
+        "port": 8545,
+        "protocol": "TCP",
+        "access": "allow"
+      }
+    ]
+  },
+  "deployment": {
+    "mode": "Incremental",
+    "template_uri": "https://path-to-your-template/template.json",
+    "parameters": {
+      "vmName": "CustomVM",
+      "adminUsername": "customuser",
+      "adminPassword": "YourSecurePassword"
+    }
+  },
+  "node_configuration": {
+    "besu_config_file": "besu.conf",
+    "node_type": "validator",
+    "network_type": "permissioned"
+  },
+  "monitoring": {
+    "enabled": true,
+    "monitoring_tool": "Azure Monitor",
+    "alert_rules": [
+      {
+        "metric": "CPU",
+        "threshold": "80%",
+        "action": "notify"
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+/* night.css - Night theme */
+body {
+    background-color: #121212;
+    color: #fff;
+}
+
+header, footer {
+    background-color: #1f1f1f;
+    color: #fff;
+}

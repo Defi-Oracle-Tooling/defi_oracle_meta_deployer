@@ -1,0 +1,10 @@
+/* day.css - Day theme */
+body {
+    background-color: #fff;
+    color: #000;
+}
+
+header, footer {
+    background-color: #e0e0e0;
+    color: #000;
+}
