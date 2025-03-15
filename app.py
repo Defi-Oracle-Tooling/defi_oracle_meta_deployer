@@ -24,6 +24,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.resource import ResourceManagementClient
+from azure.mgmt.network import NetworkManagementClient
+from azure.mgmt.storage import StorageManagementClient
 
 app = Flask(__name__)
 CORS(app)
@@ -501,6 +503,8 @@ def create_storage_account_route():
 credential = DefaultAzureCredential()
 subscription_id = os.getenv('AZURE_SUBSCRIPTION_ID')
 resource_client = ResourceManagementClient(credential, subscription_id)
+network_client = NetworkManagementClient(credential, subscription_id)
+storage_client = StorageManagementClient(credential, subscription_id)
 
 @app.route('/create_resource_group', methods=['POST'])
 @login_required
