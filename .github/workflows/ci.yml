@@ -35,7 +35,11 @@ jobs:
         docker build -t defi_oracle_meta_deployer .
 
     - name: Push Docker image
+      if: github.event_name != 'pull_request'
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-        docker tag defi_oracle_meta_deployer ${{ secrets.DOCKER_USERNAME }}/defi_oracle_meta_deployer:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}/defi_oracle_meta_deployer:latest
+        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        docker tag defi_oracle_meta_deployer "$DOCKER_USERNAME"/defi_oracle_meta_deployer:latest
+        docker push "$DOCKER_USERNAME"/defi_oracle_meta_deployer:latest
