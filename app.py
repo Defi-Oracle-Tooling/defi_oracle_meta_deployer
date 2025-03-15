@@ -327,7 +327,7 @@ def setup_monitoring_and_alerts(resource_group, vm_name):
             'az', 'monitor', 'metrics', 'alert', 'create',
             '--resource-group', resource_group,
             '--name', f'{vm_name}-cpu-alert',
-            '--scopes', f'/subscriptions/{os.getenv('AZURE_SUBSCRIPTION_ID')}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}',
+            '--scopes', f'/subscriptions/{os.getenv("AZURE_SUBSCRIPTION_ID")}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}',
             '--condition', 'avg Percentage CPU > 80',
             '--description', 'Alert when CPU usage is over 80%',
             '--action', 'email@example.com'
@@ -637,6 +637,22 @@ def predict_optimal_config_route():
         return jsonify({'prediction': prediction})
     else:
         return jsonify({'error': 'Prediction failed'}), 500
+
+@app.route('/docs/introduction')
+def docs_introduction():
+    return render_template('docs/introduction.md')
+
+@app.route('/docs/setup')
+def docs_setup():
+    return render_template('docs/setup.md')
+
+@app.route('/docs/usage')
+def docs_usage():
+    return render_template('docs/usage.md')
+
+@app.route('/docs/api_reference')
+def docs_api_reference():
+    return render_template('docs/api_reference.md')
 
 if __name__ == "__main__":
     socketio.run(app, debug=os.getenv('FLASK_ENV') == 'development', host="0.0.0.0", port=5000)
