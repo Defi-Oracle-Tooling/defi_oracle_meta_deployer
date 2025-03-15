@@ -620,6 +620,54 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// Function to visualize the decision tree dynamically
+function visualizeDecisionTree(treeData) {
+    const treeContainer = document.getElementById('decision-tree-container');
+    treeContainer.innerHTML = '';
+    const tree = document.createElement('div');
+    tree.className = 'decision-tree';
+    buildTree(tree, treeData);
+    treeContainer.appendChild(tree);
+}
+
+// Recursive function to build the tree structure
+function buildTree(container, node) {
+    const nodeElement = document.createElement('div');
+    nodeElement.className = 'tree-node';
+    nodeElement.textContent = node.name;
+    container.appendChild(nodeElement);
+    if (node.children) {
+        const childrenContainer = document.createElement('div');
+        childrenContainer.className = 'tree-children';
+        node.children.forEach(child => buildTree(childrenContainer, child));
+        container.appendChild(childrenContainer);
+    }
+}
+
+// Function to handle real-time interaction with the decision tree
+function handleTreeInteraction(event) {
+    const targetNode = event.target;
+    if (targetNode.classList.contains('tree-node')) {
+        const nodeName = prompt('Enter new name for the node:', targetNode.textContent);
+        if (nodeName) {
+            targetNode.textContent = nodeName;
+        }
+    }
+}
+
+// Add event listener for tree interaction
+document.getElementById('decision-tree-container').addEventListener('click', handleTreeInteraction);
+
+// Example usage
+const exampleTreeData = {
+    name: 'Root',
+    children: [
+        { name: 'Child 1', children: [{ name: 'Grandchild 1' }, { name: 'Grandchild 2' }] },
+        { name: 'Child 2' }
+    ]
+};
+visualizeDecisionTree(exampleTreeData);
+
 // Export functions for potential module usage
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {

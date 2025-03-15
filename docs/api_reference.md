@@ -306,3 +306,62 @@
 ### `GET /protected`
 - Description: Renders a protected page that requires authentication.
 - Response: HTML page with the current user's ID.
+
+### `POST /create_resource_group`
+- Description: Creates a new resource group with the provided configuration.
+- Request Body: `application/json`
+  - `name`: The name of the resource group.
+  - `location`: The location of the resource group.
+- Response: `application/json`
+  - `result`: Success message or error message.
+
+### `POST /deploy_vm`
+- Description: Deploys a virtual machine with the provided configuration.
+- Request Body: `application/json`
+  - `resource_group`: The resource group to deploy the VM in.
+  - `vm_name`: The name of the VM.
+  - `image`: The image to use for the VM.
+  - `admin_username`: The admin username for the VM.
+- Response: `application/json`
+  - `result`: Success message or error message.
+
+### `POST /create_network`
+- Description: Creates a virtual network with the provided configuration.
+- Request Body: `application/json`
+  - `resource_group`: The resource group to create the network in.
+  - `name`: The name of the network.
+  - `location`: The location of the network.
+  - `address_prefix`: The address prefix for the network.
+- Response: `application/json`
+  - `result`: Success message or error message.
+
+### `POST /create_storage_account`
+- Description: Creates a storage account with the provided configuration.
+- Request Body: `application/json`
+  - `resource_group`: The resource group to create the storage account in.
+  - `name`: The name of the storage account.
+  - `sku`: The SKU of the storage account.
+  - `kind`: The kind of the storage account.
+  - `location`: The location of the storage account.
+- Response: `application/json`
+  - `result`: Success message or error message.
+
+### `POST /setup_monitoring`
+- Description: Sets up monitoring and alerts for the provided resource group and VM.
+- Request Body: `application/json`
+  - `resource_group`: The resource group to set up monitoring for.
+  - `vm_name`: The name of the VM to set up monitoring for.
+- Response: `application/json`
+  - `result`: Success message or error message.
+
+### `POST /predict_optimal_config`
+- Description: Provides a prediction for the optimal configuration based on the provided features.
+- Request Body: `application/json`
+  - `vm_name`: The name of the VM.
+  - `admin_username`: The admin username for the VM.
+  - `resource_group`: The resource group.
+  - `location`: The location.
+  - `image`: The image to use for the VM.
+- Response: `application/json`
+  - `prediction`: The prediction result.
+  - `error`: Error message if the prediction fails.

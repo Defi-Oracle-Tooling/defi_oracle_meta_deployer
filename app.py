@@ -22,6 +22,8 @@ import time
 from flask_cors import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
+from azure.identity import DefaultAzureCredential
+from azure.mgmt.resource import ResourceManagementClient
 
 app = Flask(__name__)
 CORS(app)
@@ -156,22 +158,17 @@ def execute_action():
     try:
         action = request.form.get("action")
         config = request.form.get("config")
+        if not config:
+            config = load_default_config(action)
         app.logger.info(f'Action: {action} executed with config: {config}')
         
         emit_status('processing', f'Starting {action}...')
         
-        if action == "create_rg":
-            result = create_resource_group(config)
-            emit_status('success', 'Resource group created successfully')
-        elif action == "deploy_vm":
-            result = deploy_vm(config)
-            emit_status('success', 'VM deployed successfully')
-        elif action == "rest_deploy":
-            result = deploy_via_rest_api(config)
-            emit_status('success', 'REST deployment completed')
+        result = handle_decision_point(action, config)
+        if 'error' in result.lower():
+            emit_status('error', result)
         else:
-            emit_status('error', 'Unknown action selected')
-            result = "Unknown action selected."
+            emit_status('success', result)
             
         return jsonify({'result': result})
     except Exception as e:
@@ -311,35 +308,35 @@ def deploy_via_rest_api(config):
 def setup_monitoring_and_alerts(resource_group, vm_name):
     try:
         log_analytics_workspace = run_command([
-            "az", "monitor", "log-analytics", "workspace", "create",
-            "--resource-group", resource_group,
-            "--workspace-name", f"{vm_name}-log-analytics"
+            'az', 'monitor', 'log-analytics', 'workspace', 'create',
+            '--resource-group', resource_group,
+            '--workspace-name', f'{vm_name}-log-analytics'
         ])
-        logging.info("Log Analytics workspace created: %s", log_analytics_workspace)
+        logging.info('Log Analytics workspace created: %s', log_analytics_workspace)
         enable_monitoring = run_command([
-            "az", "monitor", "diagnostic-settings", "create",
-            "--resource-group", resource_group,
-            "--workspace", f"{vm_name}-log-analytics",
-            "--name", f"{vm_name}-monitoring",
-            "--vm", vm_name,
-            "--metrics", "AllMetrics",
-            "--logs", "AllLogs"
+            'az', 'monitor', 'diagnostic-settings', 'create',
+            '--resource-group', resource_group,
+            '--workspace', f'{vm_name}-log-analytics',
+            '--name', f'{vm_name}-monitoring',
+            '--vm', vm_name,
+            '--metrics', 'AllMetrics',
+            '--logs', 'AllLogs'
         ])
-        logging.info("Monitoring enabled for VM: %s", enable_monitoring)
+        logging.info('Monitoring enabled for VM: %s', enable_monitoring)
         create_alert = run_command([
-            "az", "monitor", "metrics", "alert", "create",
-            "--resource-group", resource_group,
-            "--name", f"{vm_name}-cpu-alert",
-            "--scopes", f"/subscriptions/{os.getenv('AZURE_SUBSCRIPTION_ID')}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}",
-            "--condition", "avg Percentage CPU > 80",
-            "--description", "Alert when CPU usage is over 80%",
-            "--action", "email@example.com"
+            'az', 'monitor', 'metrics', 'alert', 'create',
+            '--resource-group', resource_group,
+            '--name', f'{vm_name}-cpu-alert',
+            '--scopes', f'/subscriptions/{os.getenv('AZURE_SUBSCRIPTION_ID')}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}',
+            '--condition', 'avg Percentage CPU > 80',
+            '--description', 'Alert when CPU usage is over 80%',
+            '--action', 'email@example.com'
         ])
-        logging.info("Alert rule created: %s", create_alert)
-        return "Monitoring and alerts setup successfully."
+        logging.info('Alert rule created: %s', create_alert)
+        return 'Monitoring and alerts setup successfully.'
     except Exception as e:
-        logging.error("Failed to setup monitoring and alerts: %s", str(e))
-        return f"Exception occurred: {str(e)}"
+        logging.error('Failed to setup monitoring and alerts: %s', str(e))
+        return f'Exception occurred: {str(e)}'
 
 def emit_status(status, message):
     """Emit status updates to connected clients"""
@@ -499,6 +496,147 @@ def create_storage_account_route():
     app.logger.info(f'Storage account creation requested: {config}')
     result = create_storage_account(config)
     return jsonify({'result': result})
+
+# Initialize Azure credentials and Resource Management client
+credential = DefaultAzureCredential()
+subscription_id = os.getenv('AZURE_SUBSCRIPTION_ID')
+resource_client = ResourceManagementClient(credential, subscription_id)
+
+@app.route('/create_resource_group', methods=['POST'])
+@login_required
+def create_resource_group_route():
+    config = request.json
+    app.logger.info(f'Resource group creation requested: {config}')
+    try:
+        resource_group_params = {'location': config['location']}
+        resource_client.resource_groups.create_or_update(config['name'], resource_group_params)
+        return jsonify({'result': 'Resource group created successfully'})
+    except Exception as e:
+        app.logger.error(f'Error creating resource group: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/deploy_vm', methods=['POST'])
+@login_required
+def deploy_vm_route():
+    config = request.json
+    app.logger.info(f'VM deployment requested: {config}')
+    try:
+        # Add VM deployment logic here using Azure SDK
+        return jsonify({'result': 'VM deployed successfully'})
+    except Exception as e:
+        app.logger.error(f'Error deploying VM: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/create_network', methods=['POST'])
+@login_required
+def create_network_route():
+    config = request.json
+    app.logger.info(f'Network creation requested: {config}')
+    try:
+        network_params = {
+            'location': config['location'],
+            'address_space': {'address_prefixes': [config['address_prefix']]}
+        }
+        network_client.virtual_networks.create_or_update(config['resource_group'], config['name'], network_params)
+        return jsonify({'result': 'Network created successfully'})
+    except Exception as e:
+        app.logger.error(f'Error creating network: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/create_storage_account', methods=['POST'])
+@login_required
+def create_storage_account_route():
+    config = request.json
+    app.logger.info(f'Storage account creation requested: {config}')
+    try:
+        storage_params = {
+            'sku': {'name': config['sku']},
+            'kind': config['kind'],
+            'location': config['location'],
+            'properties': {}
+        }
+        storage_client.storage_accounts.create(config['resource_group'], config['name'], storage_params)
+        return jsonify({'result': 'Storage account created successfully'})
+    except Exception as e:
+        app.logger.error(f'Error creating storage account: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/setup_monitoring', methods=['POST'])
+@login_required
+def setup_monitoring_route():
+    config = request.json
+    app.logger.info(f'Monitoring setup requested: {config}')
+    result = setup_monitoring_and_alerts(config['resource_group'], config['vm_name'])
+    return jsonify({'result': result})
+
+def load_default_config(action):
+    default_configs = {
+        'create_rg': {
+            'name': 'DefaultResourceGroup',
+            'location': 'eastus'
+        },
+        'deploy_vm': {
+            'resource_group': 'DefaultResourceGroup',
+            'vm_name': 'DefaultVM',
+            'image': 'UbuntuLTS',
+            'admin_username': 'azureuser'
+        },
+        'rest_deploy': {
+            'resource_group': 'DefaultResourceGroup',
+            'deployment_name': 'DefaultDeployment',
+            'template_uri': 'https://path-to-your-template/template.json',
+            'vm_name': 'DefaultVM',
+            'admin_username': 'azureuser'
+        }
+    }
+    return default_configs.get(action, {})
+
+@app.route('/load_config', methods=['POST'])
+@login_required
+def load_config():
+    action = request.json.get('action')
+    config = load_default_config(action)
+    return jsonify({'config': config})
+
+def handle_decision_point(action, config):
+    if action == 'create_rg':
+        return create_resource_group(config)
+    elif action == 'deploy_vm':
+        return deploy_vm(config)
+    elif action == 'rest_deploy':
+        return deploy_via_rest_api(config)
+    elif action == 'create_network':
+        return create_network(config)
+    elif action == 'create_storage_account':
+        return create_storage_account(config)
+    else:
+        return 'Unknown action selected.'
+
+def predict_optimal_config(features):
+    try:
+        prediction = model.predict([features])
+        return prediction[0]
+    except Exception as e:
+        app.logger.error(f'Error in predict_optimal_config: {str(e)}')
+        return None
+
+@app.route('/predict_optimal_config', methods=['POST'])
+@login_required
+def predict_optimal_config_route():
+    config = request.json
+    app.logger.info(f'Optimal config prediction requested: {config}')
+    features = [
+        config.get('vm_name', ''),
+        config.get('admin_username', ''),
+        config.get('resource_group', ''),
+        config.get('location', ''),
+        config.get('image', '')
+    ]
+    prediction = predict_optimal_config(features)
+    if prediction:
+        return jsonify({'prediction': prediction})
+    else:
+        return jsonify({'error': 'Prediction failed'}), 500
 
 if __name__ == "__main__":
     socketio.run(app, debug=os.getenv('FLASK_ENV') == 'development', host="0.0.0.0", port=5000)

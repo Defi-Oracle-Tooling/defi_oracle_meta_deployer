@@ -45,12 +45,41 @@ AZURE_ADMIN_PASSWORD=your_admin_password
 SECRET_KEY=your_secret_key
 ```
 
+### Additional Setup for New Features
+
+#### Azure Active Directory (OAuth2) Integration
+
+1. Register your application in Azure Active Directory to obtain the necessary credentials.
+2. Update the `.env` file with the following additional environment variables:
+```
+AZURE_CLIENT_ID=your_client_id
+AZURE_CLIENT_SECRET=your_client_secret
+AZURE_TENANT_ID=your_tenant_id
+```
+
+#### Machine Learning Model
+
+1. Ensure the `ml_model.pkl` file is present in the project root. This file contains the pre-trained machine learning model used for predictions.
+
+#### Monitoring and Alerts
+
+1. Ensure you have the necessary permissions to create Log Analytics workspaces and set up monitoring and alerts in your Azure subscription.
+
 ### Running the Application
 5. Run the application:
 ```bash
 python app.py
 ```
 6. Access the web interface:
+Open your browser and navigate to `http://localhost:5000`.
+
+### Running the Application with New Features
+
+1. Run the application:
+```bash
+python app.py
+```
+2. Access the web interface:
 Open your browser and navigate to `http://localhost:5000`.
 
 ### Docker Setup (Optional)
