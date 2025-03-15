@@ -7,34 +7,159 @@
     <link rel="stylesheet" href="/static/css/system.css">
     <link rel="stylesheet" href="/static/css/day.css" media="(prefers-color-scheme: light)">
     <link rel="stylesheet" href="/static/css/night.css" media="(prefers-color-scheme: dark)">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap">
 </head>
 <body>
     <header>
-        <h1>DeFi Oracle Meta Deployer</h1>
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/contact">Contact</a></li>
-            </ul>
-        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <h1>DeFi Oracle Meta Deployer</h1>
+                </div>
+                <div class="col-6">
+                    <nav>
+                        <ul>
+                            <li><a href="/" class="active">Home</a></li>
+                            <li><a href="/about">About</a></li>
+                            <li><a href="/docs">Documentation</a></li>
+                            <li><a href="/contact">Contact</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
     </header>
-    <main>
-        <section>
-            <h2>Welcome to DeFi Oracle Meta Deployer</h2>
-            <p>Your one-stop solution for deploying DeFi oracles.</p>
+
+    <main class="container">
+        <section class="hero mb-4">
+            <div class="row">
+                <div class="col-8">
+                    <h2 class="mb-2">Welcome to DeFi Oracle Meta Deployer</h2>
+                    <p class="mb-3">Your one-stop solution for deploying secure and reliable DeFi oracle systems. Our platform streamlines the process of creating, testing, and deploying oracles on various blockchain networks.</p>
+                    <div class="cta-group">
+                        <a href="/deploy" class="btn">Start Deploying</a>
+                        <a href="/docs" class="btn btn-outline">Read Documentation</a>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card text-center">
+                        <h3 class="mb-2">Quick Stats</h3>
+                        <div class="stats">
+                            <div class="stat-item">
+                                <span class="stat-value">100+</span>
+                                <span class="stat-label">Deployments</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">10+</span>
+                                <span class="stat-label">Networks</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">99.9%</span>
+                                <span class="stat-label">Uptime</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
-        <section>
-            <h2>Features</h2>
-            <ul>
-                <li>Easy deployment</li>
-                <li>Secure and reliable</li>
-                <li>Scalable solutions</li>
-            </ul>
+
+        <section class="features mb-4">
+            <h2 class="text-center mb-3">Key Features</h2>
+            <div class="row">
+                <div class="col-4">
+                    <div class="card">
+                        <h3>Easy Deployment</h3>
+                        <p>Deploy oracles with just a few clicks. Our intuitive interface guides you through the entire process.</p>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card">
+                        <h3>Secure & Reliable</h3>
+                        <p>Built with security in mind. Our platform implements industry best practices to ensure your oracles are secure.</p>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card">
+                        <h3>Scalable Solutions</h3>
+                        <p>Our infrastructure scales with your needs, ensuring your oracles can handle any load.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-it-works mb-4">
+            <h2 class="text-center mb-3">How It Works</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h3>Configure</h3>
+                    <p>Choose your target blockchain, data sources, update frequency, and other parameters.</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>Test</h3>
+                    <p>Validate your configuration with our simulation environment before deploying to production.</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>Deploy</h3>
+                    <p>With one click, deploy your oracle to your selected network and start serving reliable data.</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>Monitor</h3>
+                    <p>Track performance, uptime, and other key metrics through our comprehensive dashboard.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="get-started mb-4">
+            <div class="row">
+                <div class="col-6">
+                    <h2>Ready to Get Started?</h2>
+                    <p class="mb-2">Join hundreds of projects already using our platform to power their DeFi applications.</p>
+                    <a href="/deploy" class="btn btn-accent">Launch Deployer</a>
+                </div>
+                <div class="col-6">
+                    <div class="card">
+                        <h3>Need Help?</h3>
+                        <p class="mb-2">Our documentation covers everything you need to know about deploying and managing oracles.</p>
+                        <a href="/docs" class="btn btn-outline">View Documentation</a>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
+
     <footer>
-        <p>&copy; 2022-2025 DeFi Oracle Meta Deployer. All rights reserved.</p>
+        <div class="container">
+            <div class="row">
+                <div class="col-4">
+                    <h4>DeFi Oracle Meta Deployer</h4>
+                    <p>Simplifying oracle deployment for the DeFi ecosystem.</p>
+                </div>
+                <div class="col-4">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/docs">Documentation</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-4">
+                    <h4>Connect With Us</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="GitHub" data-tooltip="Follow us on GitHub">GitHub</a>
+                        <a href="#" aria-label="Twitter" data-tooltip="Follow us on Twitter">Twitter</a>
+                        <a href="#" aria-label="Discord" data-tooltip="Join our Discord community">Discord</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p>&copy; 2023 DeFi Oracle Meta Deployer. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
     </footer>
+
+    <script src="/static/js/scripts.js"></script>
 </body>
 </html>

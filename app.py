@@ -13,8 +13,47 @@ from sklearn.ensemble import RandomForestClassifier
 import joblib
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from logging.handlers import RotatingFileHandler
+from flask_healthz import healthz
+from prometheus_client import Counter, generate_latest, Histogram, CONTENT_TYPE_LATEST
+from flask_socketio import SocketIO, emit
+from pythonjsonlogger import jsonlogger
+import traceback
+import time
+from flask_cors import CORS
+from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime
 
 app = Flask(__name__)
+CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+# Add Prometheus metrics
+REQUESTS = Counter('web_requests_total', 'Total web requests', ['endpoint'])
+LATENCY = Histogram('web_request_latency_seconds', 'Request latency in seconds', ['endpoint'])
+
+# Register health check blueprint
+app.register_blueprint(healthz, url_prefix="/health")
+
+# Health check functions
+def liveness():
+    pass  # Basic check - if this runs, app is alive
+
+def readiness():
+    try:
+        # Check if ML model is loaded
+        if not hasattr(app, 'model'):
+            return False
+        # Add any other readiness checks (database, external services, etc)
+        return True
+    except Exception:
+        return False
+
+app.config.update(
+    HEALTHZ = {
+        "live": liveness,
+        "ready": readiness,
+    }
+)
 
 # Set the secret key for session management
 app.secret_key = os.getenv('SECRET_KEY', 'supersecretkey')
@@ -70,6 +109,12 @@ console_handler.setLevel(logging.DEBUG)
 console_handler.setFormatter(formatter)
 app.logger.addHandler(console_handler)
 
+# Enhance logging with JSON formatter
+logHandler = logging.StreamHandler()
+formatter = jsonlogger.JsonFormatter('%(timestamp)s %(level)s %(name)s %(message)s')
+logHandler.setFormatter(formatter)
+app.logger.addHandler(logHandler)
+
 # Load pre-trained machine learning model
 model = joblib.load('ml_model.pkl')
 
@@ -88,18 +133,31 @@ def index():
 @app.route("/execute", methods=["POST"])
 @login_required
 def execute_action():
-    action = request.form.get("action")
-    config = request.form.get("config")
-    app.logger.info(f'Action: {action} executed with config: {config}')
-    if action == "create_rg":
-        result = create_resource_group(config)
-    elif action == "deploy_vm":
-        result = deploy_vm(config)
-    elif action == "rest_deploy":
-        result = deploy_via_rest_api(config)
-    else:
-        result = "Unknown action selected."
-    return render_template("index.html", result=result)
+    try:
+        action = request.form.get("action")
+        config = request.form.get("config")
+        app.logger.info(f'Action: {action} executed with config: {config}')
+        
+        emit_status('processing', f'Starting {action}...')
+        
+        if action == "create_rg":
+            result = create_resource_group(config)
+            emit_status('success', 'Resource group created successfully')
+        elif action == "deploy_vm":
+            result = deploy_vm(config)
+            emit_status('success', 'VM deployed successfully')
+        elif action == "rest_deploy":
+            result = deploy_via_rest_api(config)
+            emit_status('success', 'REST deployment completed')
+        else:
+            emit_status('error', 'Unknown action selected')
+            result = "Unknown action selected."
+            
+        return jsonify({'result': result})
+    except Exception as e:
+        app.logger.error(f'Error in execute_action: {str(e)}\n{traceback.format_exc()}')
+        emit_status('error', str(e))
+        return jsonify({'error': str(e)}), 500
 
 @app.route("/validate_config", methods=["POST"])
 @login_required
@@ -263,6 +321,17 @@ def setup_monitoring_and_alerts(resource_group, vm_name):
         logging.error("Failed to setup monitoring and alerts: %s", str(e))
         return f"Exception occurred: {str(e)}"
 
+def emit_status(status, message):
+    """Emit status updates to connected clients"""
+    socketio.emit('status_update', {'status': status, 'message': message})
+    app.logger.info(f'Status update: {status} - {message}')
+
+@app.errorhandler(Exception)
+def handle_error(error):
+    app.logger.error(f'Unhandled error: {str(error)}\n{traceback.format_exc()}')
+    emit_status('error', str(error))
+    return jsonify({'error': str(error)}), 500
+
 # Custom error handlers
 @app.errorhandler(404)
 def page_not_found(e):
@@ -274,5 +343,44 @@ def internal_server_error(e):
     app.logger.error(f'Server error: {e}, URL: {request.url}')
     return render_template('500.html'), 500
 
+# Health check endpoint for Docker
+@app.route('/health')
+def health_check():
+    REQUESTS.labels(endpoint='/health').inc()
+    return jsonify({"status": "healthy"}), 200
+
+# Metrics endpoint for monitoring
+@app.route('/metrics')
+def metrics():
+    REQUESTS.labels(endpoint='/metrics').inc()
+    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
+
+@app.before_request
+def before_request():
+    request.start_time = time.time()
+
+@app.after_request
+def after_request(response):
+    if request.path != '/metrics':
+        latency = time.time() - request.start_time
+        REQUESTS.labels(endpoint=request.path).inc()
+        LATENCY.labels(endpoint=request.path).observe(latency)
+    return response
+
+def check_system_status():
+    """Periodic system status check"""
+    try:
+        # Add your system checks here
+        app.logger.info("System status check completed")
+        emit_status_update('ok', 'System running normally')
+    except Exception as e:
+        app.logger.error(f"System check failed: {str(e)}")
+        emit_status_update('error', f'System check failed: {str(e)}')
+
+# Initialize scheduler
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=check_system_status, trigger="interval", minutes=5)
+scheduler.start()
+
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    socketio.run(app, debug=os.getenv('FLASK_ENV') == 'development', host="0.0.0.0", port=5000)

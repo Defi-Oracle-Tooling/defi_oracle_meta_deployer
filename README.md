@@ -90,6 +90,67 @@ docker run -p 5000:5000 defi_oracle_meta_deployer
 
 This will start the application in a Docker container and make it accessible at `http://localhost:5000`.
 
+## Docker Setup
+
+### Prerequisites
+- Docker
+- Docker Compose
+- curl (for health checks)
+
+### Configuration
+1. Copy `.env.template` to `.env`:
+```bash
+cp .env.template .env
+```
+
+2. Update the `.env` file with your actual values:
+- `SECRET_KEY`: Your Flask application secret key
+- `AZURE_SUBSCRIPTION_ID`: Your Azure subscription ID
+- `AZURE_ACCESS_TOKEN`: Your Azure access token
+- `AZURE_ADMIN_PASSWORD`: Admin password for VM deployments
+
+### Building and Running
+
+Build and start the container:
+```bash
+docker-compose up --build
+```
+
+Run in detached mode:
+```bash
+docker-compose up -d
+```
+
+Stop the container:
+```bash
+docker-compose down
+```
+
+### Health Checks and Monitoring
+
+The application includes:
+- Health check endpoint at `/health`
+- Prometheus metrics at `/metrics`
+- Liveness probe at `/healthz/live`
+- Readiness probe at `/healthz/ready`
+
+### Resource Limits
+The container is configured with:
+- CPU limit: 1.0 cores
+- Memory limit: 512MB
+- CPU reservation: 0.25 cores
+- Memory reservation: 256MB
+
+### Volumes
+- `./logs`: Application logs (persisted)
+- `./ml_model.pkl`: Machine learning model (read-only)
+
+### Security
+- Non-root user inside container
+- Read-only file system where possible
+- Environment variables for sensitive data
+- No sensitive data in image layers
+
 ## Usage
 
 - **Create Resource Group**: Executes an Azure CLI command to create a resource group.
