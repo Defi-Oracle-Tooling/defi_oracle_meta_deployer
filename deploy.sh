@@ -24,3 +24,6 @@ docker tag $IMAGE_NAME:latest $ACR_NAME.azurecr.io/$IMAGE_NAME:latest
 docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:latest
 
 # ...existing code...
+
+# Call deploy_node_mappings.sh to map RPC nodes and integrate with Cloudflare
+./deploy_node_mappings.sh

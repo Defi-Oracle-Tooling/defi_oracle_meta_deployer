@@ -1,38 +1,28 @@
 name: CI
 
-on:
-  push:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
 
-    - name: Log in to Azure
-      run: az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-
-    - name: Create Azure Container Registry if it doesn't exist
+    - name: Install dependencies
       run: |
-        az acr show --name ${{ secrets.ACR_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} &>/dev/null || \
-        az acr create --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.ACR_NAME }} --sku Basic
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-    - name: Log in to Azure Container Registry
-      run: az acr login --name ${{ secrets.ACR_NAME }}
-
-    - name: Build and push Docker image
+    - name: Run tests
       run: |
-        docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/defi_oracle_meta_deployer:latest .
-        docker push ${{ secrets.ACR_NAME }}.azurecr.io/defi_oracle_meta_deployer:latest
-      env:
-        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        AZURE_ACCESS_TOKEN: ${{ secrets.AZURE_ACCESS_TOKEN }}
-        RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
-        ACR_NAME: ${{ secrets.ACR_NAME }}
+        pytest tests/
+
+    - name: Lint code
+      run: |
+        flake8 azure_region_validator/

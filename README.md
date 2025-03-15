@@ -259,3 +259,90 @@ The CI/CD workflow performs the following steps:
 6. **Build and Push Docker Image**: Builds the Docker image and pushes it to the ACR.
 
 For more details on configuring GitHub Actions, visit [GitHub Actions Documentation](https://docs.github.com/en/actions).
+
+# Azure Region Validator
+
+## Setup
+
+1. Install dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+2. Run the CLI:
+   ```sh
+   python -m azure_region_validator.cli --subscription-id <SUBSCRIPTION_ID> --config-file <CONFIG_FILE>
+   ```
+
+## Configuration
+
+Create a JSON configuration file with the following structure:
+
+```json
+{
+  "excluded_regions": ["westus", "eastus2"]
+}
+```
+
+### Configuration Files
+
+The following configuration files are available:
+
+- `sample_config.json`: Basic configuration for deploying a resource group and VM.
+- `sample_config1.json`: Configuration for deploying a network and storage account.
+- `sample_config2.json`: Advanced configuration for deploying multiple VMs and networks.
+- `sample_config3.json`: Expert configuration for deploying a full infrastructure setup.
+
+## Testing
+
+Run tests using `pytest`:
+
+```sh
+pytest tests/
+```
+
+## Usage
+
+To use the Azure Region Validator, run the CLI with the required parameters:
+
+```sh
+python -m azure_region_validator.cli --subscription-id <SUBSCRIPTION_ID> --config-file <CONFIG_FILE>
+```
+
+This will output the filtered regions in JSON format.
+
+## Example Configuration File
+
+Create a configuration file (e.g., `config.json`) with the desired settings:
+
+```json
+{
+  "excluded_regions": ["westus", "eastus2"]
+}
+```
+
+## CI/CD Pipeline
+
+The CI/CD pipeline is configured using GitHub Actions. The workflow file is located at `.github/workflows/ci.yml`.
+
+### Environment Variables for CI/CD
+
+Ensure the following secrets are set in your GitHub repository:
+- `AZURE_SUBSCRIPTION_ID`
+- `AZURE_ACCESS_TOKEN`
+- `AZURE_CLIENT_ID`
+- `AZURE_CLIENT_SECRET`
+- `AZURE_TENANT_ID`
+- `RESOURCE_GROUP`
+- `ACR_NAME`
+
+### CI/CD Workflow
+
+The CI/CD workflow performs the following steps:
+1. **Checkout Code**: Checks out the code from the repository.
+2. **Set up Python**: Sets up Python environment.
+3. **Install Dependencies**: Installs the required dependencies.
+4. **Run Tests**: Runs the unit tests.
+5. **Lint Code**: Lints the code for style and quality.
+
+For more details on configuring GitHub Actions, visit [GitHub Actions Documentation](https://docs.github.com/en/actions).
