@@ -7,5 +7,5 @@ from azure_region_validator.cli import main
 
 def test_cli():
     runner = CliRunner()
-    result = runner.invoke(main, ['--subscription-id', 'test-sub', '--config-file', 'path/to/config.json'])
+    result = runner.invoke(main, ['--subscription-id', 'test-sub', '--config-file', 'path/to/config.json'], prog_name='cli')
     assert result.exit_code == 0

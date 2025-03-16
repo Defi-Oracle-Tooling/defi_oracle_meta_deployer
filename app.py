@@ -31,6 +31,8 @@ from logging_config import configure_logging
 from azure_operations import create_resource_group, deploy_vm, deploy_via_rest_api, create_network, create_storage_account, setup_monitoring_and_alerts, initialize_azure_integration
 from ml_model import model, predict_optimal_config
 from routes import routes_bp
+import click
+import shutil
 
 app = Flask(__name__)
 CORS(app)
@@ -145,6 +147,32 @@ def emit_status(status, message):
     """Emit status updates to connected clients"""
     socketio.emit('status_update', {'status': status, 'message': message})
     app.logger.info(f'Status update: {status} - {message}')
+
+@app.cli.command("collect-static")
+def collect_static():
+    """Collect static files for Azure Static Web Apps deployment."""
+    static_dir = os.path.join(app.root_path, 'static')
+    templates_dir = os.path.join(app.root_path, 'templates')
+    
+    # Create dist directory if it doesn't exist
+    dist_dir = os.path.join(app.root_path, 'dist')
+    if os.path.exists(dist_dir):
+        shutil.rmtree(dist_dir)
+    os.makedirs(dist_dir)
+    
+    # Copy static files
+    shutil.copytree(static_dir, os.path.join(dist_dir, 'static'))
+    
+    # Copy and process templates
+    for template in os.listdir(templates_dir):
+        if template.endswith('.html'):
+            with app.test_request_context():
+                rendered = render_template(template)
+                output_path = os.path.join(dist_dir, template)
+                with open(output_path, 'w') as f:
+                    f.write(rendered)
+    
+    click.echo('Static files collected successfully')
 
 # Initialize scheduler
 scheduler = BackgroundScheduler()

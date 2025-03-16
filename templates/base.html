@@ -6,9 +6,9 @@
     <!-- Added CSP meta tag to disallow eval -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';">
     <title>{% block title %}DeFi Oracle Meta Deployer{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/system.css' %}">
-    <link rel="stylesheet" href="{% static 'css/day.css' %}" media="(prefers-color-scheme: light)">
-    <link rel="stylesheet" href="{% static 'css/night.css' %}" media="(prefers-color-scheme: dark)">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/system.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/day.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/night.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap">
 </head>
 <body>
@@ -21,10 +21,10 @@
                 <div class="col-6">
                     <nav>
                         <ul>
-                            <li><a href="{% url 'home' %}" class="active">Home</a></li>
-                            <li><a href="{% url 'about' %}">About</a></li>
-                            <li><a href="{% url 'docs' %}">Documentation</a></li>
-                            <li><a href="{% url 'contact' %}">Contact</a></li>
+                            <li><a href="{{ url_for('routes.index') }}" class="active">Home</a></li>
+                            <li><a href="{{ url_for('routes.about') }}">About</a></li>
+                            <li><a href="{{ url_for('routes.docs') }}">Documentation</a></li>
+                            <li><a href="{{ url_for('routes.contact') }}">Contact</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -44,10 +44,10 @@
                 <div class="col-4">
                     <h4>Quick Links</h4>
                     <ul>
-                        <li><a href="{% url 'about' %}">About Us</a></li>
-                        <li><a href="{% url 'docs' %}">Documentation</a></li>
-                        <li><a href="{% url 'contact' %}">Contact</a></li>
-                        <li><a href="{% url 'terms' %}">Terms of Service</a></li>
+                        <li><a href="{{ url_for('routes.about') }}">About Us</a></li>
+                        <li><a href="{{ url_for('routes.docs') }}">Documentation</a></li>
+                        <li><a href="{{ url_for('routes.contact') }}">Contact</a></li>
+                        <li><a href="{{ url_for('routes.terms') }}">Terms of Service</a></li>
                     </ul>
                 </div>
                 <div class="col-4">
@@ -66,6 +66,6 @@
             </div>
         </div>
     </footer>
-    <script src="{% static 'js/scripts.js' %}"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
