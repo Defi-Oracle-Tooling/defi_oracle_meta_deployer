@@ -27,11 +27,13 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+          cache: 'pip'
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install flask
 
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
@@ -45,6 +47,13 @@ jobs:
             return await coredemo.getIDToken()
           result-encoding: string
 
+      - name: Build Static Files
+        run: python -m flask --app app.py collect-static
+        env:
+          FLASK_APP: app.py
+          PYTHONPATH: ${{ github.workspace }}
+          PATH: /opt/hostedtoolcache/Python/3.10.16/x64/bin:${{ env.PATH }}
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -55,9 +64,9 @@ jobs:
           api_location: ""
           output_location: "dist"
           skip_api_build: true
+          skip_app_build: true
           github_id_token: ${{ steps.idtoken.outputs.result }}
           action: "upload"
-          app_build_command: "python -m flask --app app.py collect-static"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
