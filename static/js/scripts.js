@@ -224,6 +224,11 @@ document.addEventListener('DOMContentLoaded', function() {
           }, 500);
       });
   });
+
+  initializeFormValidation();
+  setupMonitoringToggle();
+  initializeDocumentation();
+  initializeFieldValidation();
 });
 
 /**
@@ -704,3 +709,373 @@ setTimeout(() => {
     notification.remove();
   });
 }, duration);
+
+function initializeFormValidation() {
+    const simpleForm = document.getElementById('simple-form');
+    const expertForm = document.getElementById('expert-form');
+    
+    if (simpleForm) {
+        simpleForm.addEventListener('submit', handleSimpleFormSubmit);
+    }
+    
+    if (expertForm) {
+        expertForm.addEventListener('submit', handleExpertFormSubmit);
+    }
+
+    // Add real-time validation on input change
+    document.querySelectorAll('input, select').forEach(input => {
+        input.addEventListener('change', () => validateField(input));
+    });
+}
+
+function validateField(field) {
+    const validityState = field.validity;
+    const errorDiv = field.nextElementSibling;
+    
+    if (!validityState.valid) {
+        let errorMessage = field.dataset.errorMsg || getDefaultErrorMessage(field, validityState);
+        field.classList.add('is-invalid');
+        if (errorDiv && errorDiv.classList.contains('invalid-feedback')) {
+            errorDiv.textContent = errorMessage;
+        }
+        return false;
+    } else {
+        field.classList.remove('is-invalid');
+        field.classList.add('is-valid');
+        if (errorDiv && errorDiv.classList.contains('invalid-feedback')) {
+            errorDiv.textContent = '';
+        }
+        return true;
+    }
+}
+
+function getDefaultErrorMessage(field, validity) {
+    if (validity.valueMissing) return 'This field is required';
+    if (validity.typeMismatch) {
+        switch(field.type) {
+            case 'email': return 'Please enter a valid email address';
+            case 'number': return 'Please enter a valid number';
+            default: return 'Please enter a valid value';
+        }
+    }
+    if (validity.patternMismatch) return field.dataset.errorMsg || 'Please match the requested format';
+    if (validity.rangeUnderflow) return `Minimum value is ${field.min}`;
+    if (validity.rangeOverflow) return `Maximum value is ${field.max}`;
+    return 'Invalid value';
+}
+
+async function handleSimpleFormSubmit(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const isValid = validateForm(form);
+    
+    if (!isValid) {
+        showNotification('Please fill in all required fields correctly', 'error');
+        return;
+    }
+
+    const formData = {
+        mode: 'simple',
+        resourceGroup: document.getElementById('resource-group').value,
+        location: document.getElementById('location').value,
+        nodeType: document.getElementById('node-type').value,
+        vmSize: document.getElementById('vm-size').value
+    };
+
+    await submitDeployment(formData);
+}
+
+async function handleExpertFormSubmit(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const isValid = validateForm(form);
+    
+    if (!isValid) {
+        showNotification('Please fill in all required fields correctly', 'error');
+        return;
+    }
+
+    const formData = {
+        mode: 'expert',
+        network: {
+            vnetName: document.getElementById('vnet-name').value,
+            subnetPrefix: document.getElementById('subnet-prefix').value
+        },
+        nodes: {
+            count: document.getElementById('node-count').value,
+            consensusProtocol: document.getElementById('consensus-protocol').value
+        },
+        monitoring: {
+            enabled: document.getElementById('enable-monitoring').checked,
+            retention: document.getElementById('metrics-retention').value,
+            alertEmail: document.getElementById('alert-email').value
+        }
+    };
+
+    await submitDeployment(formData);
+}
+
+async function submitDeployment(formData) {
+    const deploymentStatus = document.getElementById('deployment-status');
+    const progressBar = deploymentStatus.querySelector('.progress-bar');
+    const statusMessage = document.getElementById('status-message');
+    
+    try {
+        deploymentStatus.style.display = 'block';
+        progressBar.style.width = '0%';
+        statusMessage.textContent = 'Initializing deployment...';
+
+        const response = await fetch('/deployer/deploy', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Deployment failed');
+        }
+
+        const result = await response.json();
+        
+        // Update progress and status message based on deployment stages
+        const deploymentStages = ['Validating', 'ResourceCreation', 'NodeDeployment', 'Configuration'];
+        let currentStage = 0;
+
+        const updateProgress = setInterval(() => {
+            if (currentStage < deploymentStages.length) {
+                const progress = (currentStage + 1) / deploymentStages.length * 100;
+                progressBar.style.width = `${progress}%`;
+                statusMessage.textContent = `${deploymentStages[currentStage]} in progress...`;
+                currentStage++;
+            } else {
+                clearInterval(updateProgress);
+                progressBar.style.width = '100%';
+                statusMessage.textContent = 'Deployment completed successfully!';
+                showNotification('Deployment completed successfully', 'success');
+            }
+        }, 2000);
+
+    } catch (error) {
+        progressBar.style.width = '100%';
+        progressBar.classList.add('bg-danger');
+        statusMessage.textContent = `Deployment failed: ${error.message}`;
+        showNotification('Deployment failed: ' + error.message, 'error');
+    }
+}
+
+function setupMonitoringToggle() {
+    const monitoringCheckbox = document.getElementById('enable-monitoring');
+    const monitoringOptions = document.getElementById('monitoring-options');
+    
+    if (monitoringCheckbox && monitoringOptions) {
+        monitoringCheckbox.addEventListener('change', () => {
+            monitoringOptions.style.display = monitoringCheckbox.checked ? 'block' : 'none';
+            const inputs = monitoringOptions.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.required = monitoringCheckbox.checked;
+            });
+        });
+    }
+}
+
+function showNotification(message, type = 'info', duration = 5000) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show`;
+    notification.role = 'alert';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    const container = document.querySelector('.status-container') || createStatusContainer();
+    container.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, duration);
+}
+
+function createStatusContainer() {
+    const container = document.createElement('div');
+    container.className = 'status-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+async function validateConfig(config, mode) {
+    try {
+        const response = await fetch(`/deployer/validate/${mode}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(config)
+        });
+        
+        const result = await response.json();
+        
+        // Get feedback container or create one if it doesn't exist
+        const feedbackContainer = document.getElementById('validation-feedback') || 
+            createFeedbackContainer();
+            
+        feedbackContainer.innerHTML = ''; // Clear previous feedback
+        
+        if (result.valid) {
+            feedbackContainer.innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> Configuration is valid
+                </div>`;
+        } else {
+            const errorList = result.errors.map(error => 
+                `<li><i class="fas fa-exclamation-circle"></i> ${error}</li>`
+            ).join('');
+            
+            feedbackContainer.innerHTML = `
+                <div class="alert alert-danger">
+                    <strong>Validation Errors:</strong>
+                    <ul>${errorList}</ul>
+                </div>`;
+        }
+        
+        return result;
+    } catch (error) {
+        console.error('Validation error:', error);
+        showNotification('Validation failed: ' + error.message, 'error');
+        return { valid: false, errors: [error.message] };
+    }
+}
+
+function createFeedbackContainer() {
+    const container = document.createElement('div');
+    container.id = 'validation-feedback';
+    container.className = 'validation-feedback mt-3';
+    
+    const form = document.querySelector('form');
+    form.appendChild(container);
+    
+    return container;
+}
+
+function showNotification(message, type = 'info', duration = 5000) {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 
+                             type === 'success' ? 'check-circle' : 
+                             'info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => notification.classList.add('show'), 10);
+    
+    // Auto dismiss
+    if (duration > 0) {
+        setTimeout(() => {
+            notification.classList.remove('show');
+            notification.addEventListener('transitionend', () => notification.remove());
+        }, duration);
+    }
+}
+
+// Initialize field validation on input/change
+function initializeFieldValidation() {
+    const forms = document.querySelectorAll('form[data-validate]');
+    
+    forms.forEach(form => {
+        const inputs = form.querySelectorAll('input, select, textarea');
+        const mode = form.dataset.mode || 'simple';
+        let debounceTimeout;
+        
+        inputs.forEach(input => {
+            ['input', 'change'].forEach(eventType => {
+                input.addEventListener(eventType, async () => {
+                    clearTimeout(debounceTimeout);
+                    debounceTimeout = setTimeout(async () => {
+                        const formData = Object.fromEntries(new FormData(form));
+                        const validationResult = await validateConfig(formData, mode);
+                        
+                        // Update field-specific feedback
+                        if (!validationResult.valid) {
+                            const fieldErrors = validationResult.errors.filter(
+                                error => error.toLowerCase().includes(input.name.toLowerCase())
+                            );
+                            
+                            if (fieldErrors.length > 0) {
+                                input.classList.add('is-invalid');
+                                input.classList.remove('is-valid');
+                                
+                                // Add or update error message
+                                let errorDiv = input.nextElementSibling;
+                                if (!errorDiv || !errorDiv.classList.contains('invalid-feedback')) {
+                                    errorDiv = document.createElement('div');
+                                    errorDiv.className = 'invalid-feedback';
+                                    input.parentNode.insertBefore(errorDiv, input.nextSibling);
+                                }
+                                errorDiv.textContent = fieldErrors[0];
+                            }
+                        } else {
+                            input.classList.remove('is-invalid');
+                            input.classList.add('is-valid');
+                            
+                            // Remove error message if it exists
+                            const errorDiv = input.nextElementSibling;
+                            if (errorDiv && errorDiv.classList.contains('invalid-feedback')) {
+                                errorDiv.remove();
+                            }
+                        }
+                    }, 300); // Debounce delay
+                });
+            });
+        });
+    });
+}
+
+// Documentation features
+function initializeDocumentation() {
+    // Add syntax highlighting to code blocks
+    if (typeof Prism !== 'undefined') {
+        Prism.highlightAll();
+    }
+
+    // Add copy button to code blocks
+    document.querySelectorAll('pre code').forEach(block => {
+        const button = document.createElement('button');
+        button.className = 'copy-button';
+        button.textContent = 'Copy';
+        button.addEventListener('click', () => {
+            navigator.clipboard.writeText(block.textContent);
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = 'Copy';
+            }, 2000);
+        });
+        block.parentNode.appendChild(button);
+    });
+
+    // Add anchor links to headings
+    document.querySelectorAll('.markdown-content h2, .markdown-content h3').forEach(heading => {
+        const anchor = document.createElement('a');
+        anchor.className = 'header-anchor';
+        anchor.href = `#${heading.id}`;
+        anchor.textContent = '#';
+        heading.appendChild(anchor);
+    });
+}
+
+// Initialize documentation features when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeFormValidation();
+    setupMonitoringToggle();
+    initializeDocumentation();
+    initializeFieldValidation();
+});

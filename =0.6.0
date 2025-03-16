@@ -1,0 +1,13 @@
+Defaulting to user installation because normal site-packages is not writeable
+Collecting markdown
+  Using cached Markdown-3.7-py3-none-any.whl.metadata (7.0 kB)
+Requirement already satisfied: pygments in /home/azureuser/.local/lib/python3.10/site-packages (2.19.1)
+Collecting python-markdown-math
+  Downloading python_markdown_math-0.8-py3-none-any.whl.metadata (4.1 kB)
+Collecting markdown-include
+  Downloading markdown_include-0.8.1-py3-none-any.whl.metadata (6.9 kB)
+Downloading Markdown-3.7-py3-none-any.whl (106 kB)
+Downloading python_markdown_math-0.8-py3-none-any.whl (5.9 kB)
+Downloading markdown_include-0.8.1-py3-none-any.whl (18 kB)
+Installing collected packages: markdown, python-markdown-math, markdown-include
+Successfully installed markdown-3.7 markdown-include-0.8.1 python-markdown-math-0.8

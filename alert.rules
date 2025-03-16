@@ -1,0 +1,246 @@
+groups:
+- name: defi_oracle_alerts
+  rules:
+  - alert: HighRequestLatency
+    expr: rate(web_request_latency_seconds_sum[5m]) / rate(web_request_latency_seconds_count[5m]) > 0.5
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High request latency
+      description: Average request latency is above 500ms for 5 minutes
+
+  - alert: HighErrorRate
+    expr: rate(web_requests_total{status=~"5.*"}[5m]) / rate(web_requests_total[5m]) * 100 > 5
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: High error rate
+      description: Error rate is above 5% for 5 minutes
+
+  - alert: HighMemoryUsage
+    expr: (container_memory_usage_bytes{container_name="app"} / container_memory_limit_bytes{container_name="app"}) * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High memory usage
+      description: Container memory usage is above 85% for 5 minutes
+
+  - alert: HighCPUUsage
+    expr: (rate(container_cpu_usage_seconds_total{container_name="app"}[5m]) / container_spec_cpu_quota{container_name="app"}) * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High CPU usage
+      description: Container CPU usage is above 85% for 5 minutes
+
+  - alert: ServiceDown
+    expr: up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: Service {{ $labels.job }} is down
+      description: Service has been down for more than 1 minute
+
+  - alert: RedisDown
+    expr: redis_up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: Redis instance is down
+      description: Redis instance has been down for more than 1 minute
+
+  - alert: HighRedisMemoryUsage
+    expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High Redis memory usage
+      description: Redis memory usage is above 85% for 5 minutes
+
+- name: node_alerts
+  rules:
+  - alert: HighCPULoad
+    expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High CPU load (instance {{ $labels.instance }})
+      description: CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+
+  - alert: HighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High memory usage (instance {{ $labels.instance }})
+      description: Memory usage is > 85%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+
+  - alert: HighStorageUsage
+    expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High storage usage (instance {{ $labels.instance }})
+      description: Storage usage is > 85%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+
+- name: application_alerts
+  rules:
+  - alert: InstanceDown
+    expr: up == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Instance {{ $labels.instance }} down"
+      description: "{{ $labels.instance }} has been down for more than 5 minutes."
+
+  - alert: HighRequestLatency
+    expr: histogram_quantile(0.95, rate(flask_http_request_duration_seconds_bucket[5m])) > 2
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High request latency on {{ $labels.instance }}"
+      description: "95th percentile of request latency is above 2 seconds"
+
+  - alert: HighErrorRate
+    expr: rate(flask_http_request_total{status=~"5.."}[5m]) / rate(flask_http_request_total[5m]) * 100 > 5
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High HTTP error rate"
+      description: "Error rate is above 5% for the last 5 minutes"
+
+- name: container_alerts
+  rules:
+  - alert: ContainerCPUUsage
+    expr: (rate(container_cpu_usage_seconds_total[5m]) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Container CPU usage (instance {{ $labels.instance }})"
+      description: "Container CPU usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: ContainerMemoryUsage
+    expr: (container_memory_usage_bytes / container_spec_memory_limit_bytes * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Container memory usage (instance {{ $labels.instance }})"
+      description: "Container memory usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: ContainerHighRestart
+    expr: changes(container_start_time_seconds[5m]) > 3
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Container high restart rate (instance {{ $labels.instance }})"
+      description: "Container has been restarted more than 3 times in 5 minutes\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+- name: application
+  rules:
+  - alert: HighMemoryUsage
+    expr: process_resident_memory_bytes > 1000000000
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage detected"
+      description: "Memory usage is above 1GB"
+
+  - alert: HighCPUUsage
+    expr: rate(process_cpu_seconds_total[5m]) > 0.8
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage detected"
+      description: "CPU usage is above 80%"
+
+  - alert: InstanceDown
+    expr: up == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Instance {{ $labels.instance }} down"
+      description: "{{ $labels.instance }} has been down for more than 5 minutes"
+
+  - alert: HighRequestLatency
+    expr: http_request_duration_seconds{quantile="0.9"} > 1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High request latency detected"
+      description: "90th percentile of HTTP request latency is above 1s"
+
+  - alert: ErrorRateHigh
+    expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High error rate detected"
+      description: "Error rate is above 10% for the last 5 minutes"
+
+- name: service_alerts
+  rules:
+  - alert: ServiceDown
+    expr: up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Service {{ $labels.instance }} is down"
+      description: "Service has been down for more than 1 minute"
+
+  - alert: HighCPUUsage
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage on {{ $labels.instance }}"
+      description: "CPU usage is above 85% for more than 5 minutes"
+
+  - alert: HighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 90
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage on {{ $labels.instance }}"
+      description: "Memory usage is above 90% for more than 5 minutes"
+
+  - alert: DiskSpaceRunningOut
+    expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 10
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Low disk space on {{ $labels.instance }}"
+      description: "Disk space is below 10% on {{ $labels.mountpoint }}"
+
+  - alert: APIHighLatency
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High API latency on {{ $labels.instance }}"
+      description: "95th percentile of HTTP request duration is above 1 second"

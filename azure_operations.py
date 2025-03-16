@@ -8,6 +8,12 @@ from azure.identity import DefaultAzureCredential
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.storage import StorageManagementClient
+from azure.mgmt.monitor import MonitorManagementClient
+from azure.core.exceptions import AzureError
+import re
+from datetime import datetime, timedelta
+
+logger = logging.getLogger(__name__)
 
 # Initialize Azure credentials and Resource Management client
 credential = DefaultAzureCredential()
@@ -19,15 +25,64 @@ storage_client = StorageManagementClient(credential, subscription_id)
 # Function to validate configuration data
 
 def validate_config_data(config):
+    """Enhanced config validation with detailed error checking"""
     try:
-        config_data = json.loads(config)
-        required_fields = ['name', 'location', 'resource_group', 'vm_name', 'image', 'admin_username']
-        for field in required_fields:
-            if field not in config_data:
-                return None, f"Missing required field: {field}"
-        return config_data, None
+        if isinstance(config, str):
+            config_data = json.loads(config)
+        else:
+            config_data = config
+
+        errors = []
+        
+        # Required fields validation
+        required_fields = {
+            'name': r'^[a-zA-Z0-9-_]{3,64}$',
+            'location': r'^[a-zA-Z][a-zA-Z0-9-]+$',
+            'resource_group': r'^[a-zA-Z0-9-_]{3,64}$',
+            'vm_name': r'^[a-zA-Z][a-zA-Z0-9-]{2,63}$',
+            'admin_username': r'^[a-zA-Z][a-zA-Z0-9-]{2,31}$'
+        }
+
+        for field, pattern in required_fields.items():
+            value = config_data.get(field)
+            if not value:
+                errors.append(f"Missing required field: {field}")
+            elif not re.match(pattern, value):
+                errors.append(f"Invalid {field} format")
+
+        # Network configuration validation
+        if 'network' in config_data:
+            network = config_data['network']
+            if not re.match(r'^[a-zA-Z0-9-_]{2,64}$', network.get('vnet', '')):
+                errors.append("Invalid virtual network name")
+            if 'subnet_prefix' in network:
+                if not re.match(r'^([0-9]{1,3}\.){3}[0-9]{1,3}\/[0-9]{1,2}$', network['subnet_prefix']):
+                    errors.append("Invalid subnet prefix format")
+
+        # Security validation
+        if 'security' in config_data:
+            security = config_data['security']
+            for rule in security.get('firewall_rules', []):
+                if not 0 <= int(rule.get('port', -1)) <= 65535:
+                    errors.append(f"Invalid port number: {rule.get('port')}")
+
+        # Monitoring validation
+        if config_data.get('monitoring', {}).get('enabled'):
+            monitoring = config_data['monitoring']
+            try:
+                retention = int(monitoring.get('retention', 0))
+                if not 1 <= retention <= 365:
+                    errors.append("Retention period must be between 1 and 365 days")
+            except ValueError:
+                errors.append("Invalid retention period value")
+
+        return (None, errors) if errors else (config_data, None)
+
     except json.JSONDecodeError as e:
-        return None, f"Invalid configuration: {str(e)}"
+        return None, f"Invalid JSON format: {str(e)}"
+    except Exception as e:
+        logger.error(f"Configuration validation error: {str(e)}")
+        return None, f"Validation error: {str(e)}"
 
 # Function to run a command
 
@@ -138,38 +193,108 @@ def create_storage_account(config):
 
 # Function to setup monitoring and alerts
 
-def setup_monitoring_and_alerts(resource_group, vm_name):
+def setup_monitoring_and_alerts(config):
+    """Enhanced monitoring setup with comprehensive alerting"""
     try:
-        log_analytics_workspace = run_command([
-            'az', 'monitor', 'log-analytics', 'workspace', 'create',
-            '--resource-group', resource_group,
-            '--workspace-name', f'{vm_name}-log-analytics'
-        ])
-        logging.info('Log Analytics workspace created: %s', log_analytics_workspace)
-        enable_monitoring = run_command([
-            'az', 'monitor', 'diagnostic-settings', 'create',
-            '--resource-group', resource_group,
-            '--workspace', f'{vm_name}-log-analytics',
-            '--name', f'{vm_name}-monitoring',
-            '--vm', vm_name,
-            '--metrics', 'AllMetrics',
-            '--logs', 'AllLogs'
-        ])
-        logging.info('Monitoring enabled for VM: %s', enable_monitoring)
-        create_alert = run_command([
-            'az', 'monitor', 'metrics', 'alert', 'create',
-            '--resource-group', resource_group,
-            '--name', f'{vm_name}-cpu-alert',
-            '--scopes', f'/subscriptions/{os.getenv("AZURE_SUBSCRIPTION_ID")}/resourceGroups/{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}',
-            '--condition', 'avg Percentage CPU > 80',
-            '--description', 'Alert when CPU usage is over 80%',
-            '--action', 'email@example.com'
-        ])
-        logging.info('Alert rule created: %s', create_alert)
-        return 'Monitoring and alerts setup successfully.'
+        credential = DefaultAzureCredential()
+        monitor_client = MonitorManagementClient(credential, config['subscription_id'])
+        
+        # Create action group for alerts
+        action_group = {
+            'location': 'global',
+            'group_short_name': 'NodeAlerts',
+            'enabled': True,
+            'email_receivers': [{
+                'name': 'AdminAlert',
+                'email_address': config.get('alert_email'),
+                'use_common_alert_schema': True
+            }] if config.get('alert_email') else [],
+            'webhook_receivers': [{
+                'name': 'WebhookAlert',
+                'service_uri': config.get('webhook_url')
+            }] if config.get('webhook_url') else []
+        }
+        
+        monitor_client.action_groups.create_or_update(
+            config['resource_group'],
+            'NodeActionGroup',
+            action_group
+        )
+        
+        # Set up metric alerts
+        metrics = {
+            'CPU': {'threshold': 80, 'window': 'PT5M', 'frequency': 'PT1M'},
+            'Memory': {'threshold': 85, 'window': 'PT5M', 'frequency': 'PT1M'},
+            'Disk': {'threshold': 90, 'window': 'PT15M', 'frequency': 'PT5M'},
+            'NetworkIn': {'threshold': 95, 'window': 'PT15M', 'frequency': 'PT5M'},
+            'NetworkOut': {'threshold': 95, 'window': 'PT15M', 'frequency': 'PT5M'}
+        }
+        
+        for metric, settings in metrics.items():
+            alert_rule = {
+                'location': config['location'],
+                'description': f'{metric} usage alert',
+                'severity': 2,
+                'enabled': True,
+                'scopes': [f"/subscriptions/{config['subscription_id']}/resourceGroups/{config['resource_group']}/providers/Microsoft.Compute/virtualMachines/{config['vm_name']}"],
+                'evaluation_frequency': settings['frequency'],
+                'window_size': settings['window'],
+                'criteria': {
+                    'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria',
+                    'all_of': [{
+                        'criterion_type': 'StaticThresholdCriterion',
+                        'metric_name': metric,
+                        'metric_namespace': 'Microsoft.Compute/virtualMachines',
+                        'operator': 'GreaterThan',
+                        'threshold': settings['threshold'],
+                        'time_aggregation': 'Average'
+                    }]
+                },
+                'actions': [{
+                    'action_group_id': f"/subscriptions/{config['subscription_id']}/resourceGroups/{config['resource_group']}/providers/Microsoft.Insights/actionGroups/NodeActionGroup"
+                }]
+            }
+            
+            monitor_client.metric_alerts.create_or_update(
+                config['resource_group'],
+                f'{metric.lower()}-alert',
+                alert_rule
+            )
+        
+        # Set up diagnostic settings
+        diagnostic_settings = {
+            'logs': [{
+                'category': 'Administrative',
+                'enabled': True,
+                'retention_policy': {
+                    'enabled': True,
+                    'days': config.get('retention_days', 30)
+                }
+            }],
+            'metrics': [{
+                'category': 'AllMetrics',
+                'enabled': True,
+                'retention_policy': {
+                    'enabled': True,
+                    'days': config.get('retention_days', 30)
+                }
+            }]
+        }
+        
+        monitor_client.diagnostic_settings.create_or_update(
+            resource_uri=f"/subscriptions/{config['subscription_id']}/resourceGroups/{config['resource_group']}/providers/Microsoft.Compute/virtualMachines/{config['vm_name']}",
+            name='NodeDiagnostics',
+            parameters=diagnostic_settings
+        )
+        
+        return {'result': 'Monitoring and alerts configured successfully'}
+        
+    except AzureError as e:
+        logger.error(f"Azure monitoring setup error: {str(e)}")
+        return {'error': f"Monitoring setup failed: {str(e)}"}
     except Exception as e:
-        logging.error('Failed to setup monitoring and alerts: %s', str(e))
-        return f'Exception occurred: {str(e)}'
+        logger.error(f"Unexpected error in monitoring setup: {str(e)}")
+        return {'error': f"Unexpected error: {str(e)}"}
 
 # Function to initialize Azure integrations
 

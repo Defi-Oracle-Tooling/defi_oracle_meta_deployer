@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="list-group">
+                <a href="/docs/introduction" class="list-group-item list-group-item-action">Introduction</a>
+                <a href="/docs/setup" class="list-group-item list-group-item-action">Setup Guide</a>
+                <a href="/docs/usage" class="list-group-item list-group-item-action">Usage</a>
+                <a href="/docs/api_reference" class="list-group-item list-group-item-action">API Reference</a>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class="markdown-content">
+                {{ content | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/prism.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/prism.css') }}">
+{% endblock %}

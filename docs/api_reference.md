@@ -365,3 +365,98 @@
 - Response: `application/json`
   - `prediction`: The prediction result.
   - `error`: Error message if the prediction fails.
+
+# DeFi Oracle Meta Deployer API Reference
+
+## Deployment Endpoints
+
+### Simple Mode Deployment
+`POST /api/deploy`
+```json
+{
+    "mode": "simple",
+    "resourceGroup": "my-oracle-rg",
+    "location": "eastus",
+    "nodeType": "validator",
+    "vmSize": "Standard_D2s_v3"
+}
+```
+
+#### Validation Rules:
+- `resourceGroup`: 3-64 characters, alphanumeric, dashes and underscores only
+- `location`: Must be one of: eastus, westus, northeurope
+- `nodeType`: Must be one of: validator, observer, bootnode
+- `vmSize`: Must be one of: Standard_D2s_v3, Standard_D4s_v3, Standard_D8s_v3
+
+### Expert Mode Deployment
+`POST /api/deploy`
+```json
+{
+    "mode": "expert",
+    "network": {
+        "vnetName": "oracle-network",
+        "subnetPrefix": "10.0.0.0/24"
+    },
+    "nodes": {
+        "count": 3,
+        "consensusProtocol": "ibft2"
+    },
+    "monitoring": {
+        "enabled": true,
+        "retention": 30,
+        "alertEmail": "admin@example.com"
+    }
+}
+```
+
+#### Validation Rules:
+- Network Configuration:
+  - `vnetName`: 2-64 characters, alphanumeric, dashes and underscores only
+  - `subnetPrefix`: Valid CIDR notation (e.g., 10.0.0.0/24)
+- Node Configuration:
+  - `count`: Integer between 1 and 10
+  - `consensusProtocol`: Must be one of: ibft2, qbft, clique
+- Monitoring Configuration (optional):
+  - `retention`: Integer between 1 and 90 days
+  - `alertEmail`: Valid email address format
+
+## Validation Endpoints
+
+### Validate Simple Mode Configuration
+`POST /api/validate/simple`
+Returns validation status and any errors for simple mode configuration.
+
+### Validate Expert Mode Configuration
+`POST /api/validate/expert`
+Returns validation status and any errors for expert mode configuration.
+
+## Response Format
+
+### Success Response
+```json
+{
+    "valid": true,
+    "errors": []
+}
+```
+
+### Error Response
+```json
+{
+    "valid": false,
+    "errors": [
+        "Invalid resource group name",
+        "Invalid location"
+    ]
+}
+```
+
+## Deployment Status
+
+The deployment process includes multiple stages:
+1. Validation
+2. Resource Creation
+3. Node Deployment
+4. Configuration
+
+Progress updates are sent via WebSocket at each stage.
