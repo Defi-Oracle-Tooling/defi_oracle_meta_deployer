@@ -138,10 +138,10 @@ def check_system_status():
     try:
         # Add your system checks here
         app.logger.info("System status check completed")
-        emit_status_update('ok', 'System running normally')
+        emit_status('ok', 'System running normally')
     except Exception as e:
         app.logger.error(f"System check failed: {str(e)}")
-        emit_status_update('error', f'System check failed: {str(e)}')
+        emit_status('error', f'System check failed: {str(e)}')
 
 def emit_status(status, message):
     """Emit status updates to connected clients"""
